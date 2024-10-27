@@ -1,0 +1,55 @@
+/*
+ * Copyright (c)  2016-2019 https://www.thecoderscorner.com (Dave Cherry).
+ * This product is licensed under an Apache license, see the LICENSE file in the top-level directory.
+ *
+ */
+
+#statusLabel {
+    -fx-border-color: #333333;
+    -fx-border-width: 1, 1;
+    -fx-border-style: solid none none none, segments(1, 1);
+    -fx-border-radius: 0, 0;
+    -fx-border-insets: 0;
+}
+
+.updated {
+    -fx-background-color: #b5c182;
+    -fx-background-radius: 2;
+    -fx-background-insets: 0;
+}
+
+.ackError {
+    -fx-background-color: #c12933;
+    -fx-background-radius: 2;
+    -fx-background-insets: 0;
+    -fx-text-fill: #f4f0ff;
+
+}
+
+.labelMenuHdr {
+    -fx-font-size: 125%;
+    -fx-font-weight: bold;
+}
+
+.popupWindow {
+    -fx-background-color: #f4f0ff;
+    -fx-border-style: solid;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-border-insets: 3px;
+    -fx-background-insets: 6px;
+    -fx-padding: 10px;
+}
+
+.flatButton {
+    -fx-background-color: #3f4144;
+    -fx-background-radius: 5,4,4,5;
+    -fx-background-insets: 0,1,2,0;
+    -fx-text-fill: white;
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-padding: 8 20 8 20;
+}
+.flatButton Text {
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.9) , 1, 0.0 , 0 , 1 );
+}
