@@ -8,16 +8,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.thecoderscorner.tcmenu</groupId>
-    <artifactId>embedCONTROLFx</artifactId>
-    <name>embedCONTROLFx</name>
-    <description>TcMenu embedCONTROL JavaFX UI components for embedded menu apps</description>
-    <version>4.1.2</version>
+    <artifactId>embedControlJavaFx</artifactId>
+    <name>embedControlJavaFx</name>
+    <description>TcMenu EmbedControl JavaFX UI components for embedded menu apps</description>
+    <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <jdk.version>20</jdk.version>
-        <jfx.version>20</jfx.version>
+        <jfx.version>23.0.1</jfx.version>
         <jmetro.version>11.6.15</jmetro.version>
         <springframework.version>6.0.11</springframework.version>
+        <java.api.version>4.4.0-SNAPSHOT</java.api.version>
     </properties>
 
     <dependencies>
@@ -26,37 +26,28 @@
         <dependency>
             <groupId>com.thecoderscorner.tcmenu</groupId>
             <artifactId>tcMenuJavaAPI</artifactId>
-            <version>${project.version}</version>
+            <version>${java.api.version}</version>
         </dependency>
         <dependency>
             <groupId>com.thecoderscorner.tcmenu</groupId>
             <artifactId>embedCONTROLCore</artifactId>
-            <version>${project.version}</version>
+            <version>${java.api.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.42.0.0</version>
-        </dependency>
 
-        <!--
-        !!!!!!!JavaFX - Special notes!!!!!!
-        If you are using BellSoft's Liberica Full JDK leave the below scopes set to "test"
-        If you are using another JDK without JavaFX, comment out the scope for each org.openjfx component.
-         -->
-
+        <!-- !!!!!!!JavaFX - Special notes!!!!!!
+          If you are using BellSoft Liberica Full JDK leave the below scopes set to "test"
+          If you are using another JDK without JavaFX, comment out the scope for each org.openjfx component.
+        -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${jfx.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${jfx.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- END JavaFX notes -->
@@ -87,8 +78,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
+                    <source>22</source>
+                    <target>22</target>
                 </configuration>
             </plugin>
             <plugin>

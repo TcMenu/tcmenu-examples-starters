@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- it is safe to edit this file, it will not be replaced by TcMenu designer unless you delete it --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.thecoderscorner.menuexample</groupId>
+    <artifactId>javaApiWebsocketServer</artifactId>
+    <name>javaApiWebsocketServer</name>
+    <description>An application built with TcMenu/EmbedControl</description>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <properties>
+        <jfx.version>23.0.1</jfx.version>
+        <jserialcomm.version>2.11.0</jserialcomm.version>
+        <tcmenu.api.version>4.4.0-SNAPSHOT</tcmenu.api.version>
+        <timestamp>${maven.build.timestamp}</timestamp>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fazecast</groupId>
+            <artifactId>jSerialComm</artifactId>
+            <version>${jserialcomm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thecoderscorner.tcmenu</groupId>
+            <artifactId>tcMenuJavaAPI</artifactId>
+            <version>${tcmenu.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thecoderscorner.tcmenu</groupId>
+            <artifactId>embedCONTROLCore</artifactId>
+            <version>${tcmenu.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.7</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>javaApiWebsocketServer</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>22</source>
+                    <target>22</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

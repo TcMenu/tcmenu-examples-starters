@@ -54,8 +54,7 @@ public class RemoteUiEmbedControlContext implements EmbedControlContext {
         var defaultViews = List.of(
                 new AboutPanelPresentable(versionHelper),
                 new SettingsPanelPresentable(getSettings(), dataStore),
-                new NewConnectionPanelPresentable(this),
-                new FormManagerPanelPresentable(null, this)
+                new NewConnectionPanelPresentable(this)
         );
 
         var loadedLayouts = dataStore.getAllConnections();
