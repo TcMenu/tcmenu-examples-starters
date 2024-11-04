@@ -1,6 +1,10 @@
 # TcMenu examples and starter projects
 
-## Licnese
+[![Java Build](https://github.com/TcMenu/tcmenu-examples-starters/actions/workflows/build.yml/badge.svg)](https://github.com/TcMenu/tcMenu/actions/workflows/build.yml)
+[![davetcc](https://img.shields.io/badge/davetcc-dev-blue.svg)](https://github.com/davetcc)
+[![JSC TechMinds](https://img.shields.io/badge/JSC-TechMinds-green.svg)](https://www.jsctm.cz)
+
+## License
 
 IMPORTANT: Unlike our other open source repositories, most projects in this repository are under a far more restrictive license. The most important differences are that:
 
