@@ -20,13 +20,13 @@ jobs:
         cache: maven
 
     - name: Build EmbedControl
-      run: mvn -B install -Dgpg.skip=true --file embedControlJavaFx/pom.xml
+      run: mvn -B install -Dgpg.skip=true --file java/embedControlJavaFx/pom.xml
   
     - name: Build EmbeddedUi
-      run: mvn -B install -Dgpg.skip=true --file embeddedJavaDeviceUI/pom.xml
+      run: mvn -B install -Dgpg.skip=true --file java/embeddedJavaDeviceUI/pom.xml
 
     - name: Build Examples
-      run: mvn -B install -Dgpg.skip=true --file javaApiExamples/pom.xml
+      run: mvn -B install -Dgpg.skip=true --file java/javaApiExamples/pom.xml
 
     - name: Build Websocket Example
-      run: mvn -B install -Dgpg.skip=true --file javaApiWebsocketServer/pom.xml
+      run: mvn -B install -Dgpg.skip=true --file java/javaApiWebsocketServer/pom.xml
