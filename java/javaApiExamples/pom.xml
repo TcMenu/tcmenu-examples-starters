@@ -8,7 +8,7 @@
 
     <properties>
         <jserialcomm.version>2.11.0</jserialcomm.version>
-        <tcmenu.api.version>4.4.0-SNAPSHOT</tcmenu.api.version>
+        <tcmenu.api.version>4.4.0</tcmenu.api.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
 
