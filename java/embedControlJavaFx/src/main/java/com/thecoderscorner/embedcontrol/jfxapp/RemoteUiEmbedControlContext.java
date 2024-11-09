@@ -66,7 +66,7 @@ public class RemoteUiEmbedControlContext implements EmbedControlContext {
         allPresentableViews.addAll(defaultViews);
         allPresentableViews.addAll(loadedPanels);
 
-        controller.initialise(getSettings(), allPresentableViews, versionHelper);
+        controller.initialise(allPresentableViews, versionHelper);
     }
 
 

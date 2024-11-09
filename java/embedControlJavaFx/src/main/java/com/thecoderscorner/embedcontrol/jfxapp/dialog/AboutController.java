@@ -7,9 +7,11 @@ import javafx.scene.control.Label;
 
 public class AboutController {
     public Label versionLabel;
+    public Label titleLabel;
 
     public void initialise(VersionHelper versionHelper) {
         versionLabel.setText("Version " + versionHelper.getVersion() + " built on " + versionHelper.getBuildTimestamp());
+        titleLabel.setText(versionHelper.getTitle());
     }
 
     public void onVisitDocs(ActionEvent actionEvent) {

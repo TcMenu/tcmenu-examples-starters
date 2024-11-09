@@ -6,13 +6,15 @@ Contained in this package is the source code for the complete user interface tha
 
 It is likely before any public release that you'll want to customize the application. This can easily be acheived by editing the images and forms stored in the `src/main/resources` folder. A few of the most common ones are provided here:
 
-* `fximg/large_icon.png` is the icon drawn by the application forms.
-* `fximg/embedCONTROL.ico` is the start up application icon, only used by the packager on Windows
-* `fximg/MyIcons.icns` is the start up application icon, only used by the packager on macOS
+* `version.properties` this contains the name of the application, and the build version and timestamp (the later are set during a maven build).
 * `aboutPage.fxml` is the JavaFX form definition for the about window.
 * `generalSettings.fxml` is the JavaFX settings form definition, only change this if you also modify the controller accordingly.
 * `mainWindow.fxml` is the main window when the app starts
-* `version.properties` is automatically set by maven during the build
+* `fximg/large_icon.png` is the icon drawn by the application forms.
+* `fximg/embedCONTROL.ico` is the start up application icon, only used by the packager on Windows
+* `fximg/MyIcons.icns` is the start up application icon, only used by the packager on macOS
+
+You can use the EmbedControl icon or logo to show compatibility with TagVal protocol. 
 
 You can also provide your own custom pages, each page must extend from `PanelPresentable` and can be added to the navigation manager, in this case the `JfxNavigationHeader` in `RemoteConnectionPanel` using `navigationManager.addCustomMenuPanel(subMenuCustom, myPanelPresentable)`.
 

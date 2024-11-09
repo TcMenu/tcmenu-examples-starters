@@ -50,9 +50,9 @@
          <top>
             <VBox prefHeight="178.0" prefWidth="200.0" style="-fx-background-color: #4bf;" BorderPane.alignment="CENTER">
                <children>
-                  <Label contentDisplay="TOP" text="embedCONTROL">
+                  <Label contentDisplay="TOP" text="branding" fx:id="titleBranding">
                      <font>
-                        <Font name="Arial" size="24.0" />
+                        <Font name="Arial" size="20.0" />
                      </font>
                      <graphic>
                         <ImageView fitHeight="111.0" fitWidth="117.0" pickOnBounds="true" preserveRatio="true">

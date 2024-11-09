@@ -27,4 +27,12 @@ public class VersionHelper {
     public String getBuildTimestamp() {
         return props.getProperty("build.timestamp", "");
     }
+
+    public String getShortTitle() {
+        return props.getProperty("build.shortTitle");
+    }
+
+    public String getTitle() {
+        return props.getProperty("build.title");
+    }
 }

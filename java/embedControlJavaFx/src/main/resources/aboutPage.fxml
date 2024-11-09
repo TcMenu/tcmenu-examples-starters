@@ -14,7 +14,7 @@
             <Image url="@fximg/large_icon.png" />
          </image>
       </ImageView>
-      <Label text="embedCONTROL">
+      <Label text="TBD" fx:id="titleLabel">
          <font>
             <Font size="24.0" />
          </font>

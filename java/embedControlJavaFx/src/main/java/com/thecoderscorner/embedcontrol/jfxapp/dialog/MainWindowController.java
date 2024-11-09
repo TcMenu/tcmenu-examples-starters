@@ -7,7 +7,6 @@
 package com.thecoderscorner.embedcontrol.jfxapp.dialog;
 
 import com.thecoderscorner.embedcontrol.core.controlmgr.PanelPresentable;
-import com.thecoderscorner.embedcontrol.core.service.GlobalSettings;
 import com.thecoderscorner.embedcontrol.jfxapp.VersionHelper;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -42,17 +41,16 @@ public class MainWindowController {
     public Label versionField;
     public ListView<PanelPresentable<Node>> connectionList;
     public BorderPane detailPane;
-    private GlobalSettings settings;
+    public Label titleBranding;
     private PanelPresentable currentlyDisplayed;
 
-    public void initialise(GlobalSettings settings, ObservableList<PanelPresentable<Node>> initialPanels, VersionHelper versionHelper) {
-        this.settings = settings;
-
+    public void initialise(ObservableList<PanelPresentable<Node>> initialPanels, VersionHelper versionHelper) {
+        titleBranding.setText(versionHelper.getShortTitle());
         versionField.setText("Version " + versionHelper.getVersion());
 
-        connectionList.setCellFactory(list -> new PanelPresentableListCell());
+        connectionList.setCellFactory(_ -> new PanelPresentableListCell());
         connectionList.setItems(initialPanels);
-        connectionList.getSelectionModel().selectedItemProperty().addListener((observableValue, oldVal, newVal) -> {
+        connectionList.getSelectionModel().selectedItemProperty().addListener((_, _, newVal) -> {
             if(newVal != null) {
                 try {
                     logger.log(INFO, "Change panel to ", newVal.getPanelName());

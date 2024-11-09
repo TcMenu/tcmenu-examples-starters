@@ -14,7 +14,7 @@
             <Image url="@fximg/ethernet-connection.jpg" />
          </image>
       </ImageView>
-      <Label text="embedCONTROL">
+      <Label text="Connecting With Device">
          <font>
             <Font size="24.0" />
          </font>
