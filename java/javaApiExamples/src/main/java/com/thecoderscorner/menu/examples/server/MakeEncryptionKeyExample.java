@@ -12,7 +12,7 @@ import java.util.Base64;
 
 /**
  * This example shows how to make an encryption key pair, use them, serialise them, and create a tcMenuApi protocol
- * encryption handler from it too.
+ * encryption handler from it too. The encryption keys are 256 bits in length using AES format.
  */
 public class MakeEncryptionKeyExample {
     public static void main(String[] args) throws Exception {

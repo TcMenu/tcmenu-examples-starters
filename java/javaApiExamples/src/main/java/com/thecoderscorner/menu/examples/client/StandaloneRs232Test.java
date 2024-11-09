@@ -4,7 +4,7 @@
  *
  */
 
-package com.thecoderscorner.menu.examples;
+package com.thecoderscorner.menu.examples.client;
 
 import com.thecoderscorner.menu.domain.MenuItem;
 import com.thecoderscorner.menu.domain.state.MenuTree;
@@ -91,6 +91,11 @@ public class StandaloneRs232Test {
         }
     }
 
+    /**
+     * This class implements the `RemoteControllerListener` interface and as such is made aware of events from the
+     * connector layer, and also told when we've managed to bootstrap successfully or when items change. The controller
+     * takes care of the menu tree, which it builds during the device bootstrap.
+     */
     private class MyRemoteListener implements RemoteControllerListener {
         @Override
         public void menuItemChanged(MenuItem item, boolean valueOnly) {
@@ -125,6 +130,9 @@ public class StandaloneRs232Test {
 
         @Override
         public void ackReceived(CorrelationId key, MenuItem item, AckStatus st) {
+            // This is called when an update or other event is acknowledged. It provides back the same correlation ID
+            // for acknowledgement that the API generated during send. Whenever you call send on the controller, you're
+            // provided by return with a correlation.
             logger.log(INFO, "Ack -" + key + " item " + item + " status " + st);
         }
 

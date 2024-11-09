@@ -24,7 +24,7 @@ import static java.util.logging.Level.FINEST;
  * 
  * See DeviceWithClientConnectionExample for the other side of this example
  */
-public class ClientThatAcceptsForRemoteExample {
+public class APIClientThatAcceptsForRemoteDevice {
     private final static System.Logger logger = System.getLogger("ExampleClient");
 
     // the port on which we will accept.

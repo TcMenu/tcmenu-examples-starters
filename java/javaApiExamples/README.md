@@ -2,10 +2,10 @@ Various demonstrations of how to use the Java API in your applications. Kept as 
 
 ## Examples for when the API is acting as a device
 
-These examples cover the cases where the API is acting as a device, for example an embedded Raspberry PI.
+These examples cover the cases where the API is acting as a `device`, for example a Raspberry PI or other Linux system embedded into a device.
 
-* An example showing a device that tries to connect to client connections - `DeviceWithClientConnectionExample.java`
-* This code allows you to make AES encryption keys `MakeEncryptionKeyExample.java`
+* An example showing a `device` that tries to connect to the `API` which is accepting. As a `device` we would be responsible for bootstrapping and hosting the menu items - `DeviceWithClientConnectionExample.java`
+* This code allows you to make AES encryption keys that work with the other examples or elsewhere `MakeEncryptionKeyExample.java`
 
 ## Examples where the API is running remotely connecting to a device
 

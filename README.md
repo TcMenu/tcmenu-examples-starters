@@ -12,7 +12,18 @@
 
 ## Java examples
 
-All the examples are set up to work with the latest version of Java `OpenJDK` and `maven` build tool. You can use more or less any OpenJDK distribution, but we tend to use Adoptium at the moment.
+### Setting up a Java build
+
+For development we recommend IntelliJ, either edition of it should be fine to get started with. To build on the command line, ensure that you have the most recent OpenJDK and a recent version of maven on your system, without these it will not be possible to build.
+
+* All OpenJDK's that we've tested work for this, we've tried: Liberica, Adoptium, Amazon Corretto and Microsoft JDK.
+* For Apache maven we recommend using [https://maven.apache.org/]
+
+Using git or zip download, get the contents of the tcMenu repository locally, for example:
+
+    git clone https://github.com/TcMenu/tcmenu-examples-starters.git
+
+Once you've set up the above you can start with any of the following projects:
 
 * embedControlJavaFX: A starting point for deploying a desktop control and monitoring UI app that works on many platforms.
 * embeddedJavaDeviceUI: A starting point embedded control application for embedded boards that can run JavaFX.
