@@ -1,7 +1,6 @@
-package com.thecoderscorner.menuexample.tcmenu;
+package com.thecoderscorner.menu.devicedemo;
 
 import com.thecoderscorner.embedcontrol.core.service.GlobalSettings;
-import com.thecoderscorner.embedcontrol.customization.MenuItemStore;
 import com.thecoderscorner.embedcontrol.jfx.controlmgr.JfxNavigationHeader;
 import com.thecoderscorner.embedcontrol.jfx.controlmgr.JfxNavigationManager;
 import com.thecoderscorner.embedcontrol.jfx.controlmgr.TitleWidget;
@@ -38,16 +37,13 @@ public class EmbeddedJavaDemoController implements MenuManagerListener {
     private final JfxNavigationManager navigationManager;
     private final ScheduledExecutorService executorService;
     private final GlobalSettings globalSettings;
-    private final MenuItemStore itemStore;
 
     public EmbeddedJavaDemoController(EmbeddedJavaDemoMenu menuDef, JfxNavigationManager navigationManager,
-                                      ScheduledExecutorService executorService, GlobalSettings settings,
-                                      MenuItemStore itemStore) {
+                                      ScheduledExecutorService executorService, GlobalSettings settings) {
         this.menuDef = menuDef;
         this.navigationManager = navigationManager;
         this.executorService = executorService;
         this.globalSettings = settings;
-        this.itemStore = itemStore;
     }
 
     @MenuCallback(id=15, listResult=true)

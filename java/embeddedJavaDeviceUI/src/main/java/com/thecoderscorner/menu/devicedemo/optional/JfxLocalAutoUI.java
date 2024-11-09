@@ -1,16 +1,26 @@
-package com.thecoderscorner.menuexample.tcmenu.plugins;
+package com.thecoderscorner.menu.devicedemo.optional;
 
+import com.thecoderscorner.embedcontrol.core.controlmgr.EditorComponent;
 import com.thecoderscorner.embedcontrol.core.controlmgr.MenuComponentControl;
+import com.thecoderscorner.embedcontrol.core.controlmgr.color.ConditionalColoring;
+import com.thecoderscorner.embedcontrol.core.controlmgr.color.ControlColor;
+import com.thecoderscorner.embedcontrol.core.service.GlobalSettings;
 import com.thecoderscorner.embedcontrol.core.util.MenuAppVersion;
+import com.thecoderscorner.embedcontrol.customization.ColorCustomizable;
+import com.thecoderscorner.embedcontrol.customization.GlobalColorCustomizable;
 import com.thecoderscorner.embedcontrol.customization.MenuItemStore;
+import com.thecoderscorner.embedcontrol.jfx.controlmgr.JfxMenuEditorFactory;
 import com.thecoderscorner.embedcontrol.jfx.controlmgr.JfxNavigationHeader;
 import com.thecoderscorner.embedcontrol.jfx.controlmgr.JfxNavigationManager;
 import com.thecoderscorner.embedcontrol.jfx.controlmgr.panels.AuthIoTMonitorPresentable;
 import com.thecoderscorner.menu.auth.MenuAuthenticator;
 import com.thecoderscorner.menu.auth.PropertiesAuthenticator;
+import com.thecoderscorner.menu.devicedemo.EmbeddedJavaDemoMenu;
+import com.thecoderscorner.menu.devicedemo.MenuConfig;
 import com.thecoderscorner.menu.domain.MenuItem;
 import com.thecoderscorner.menu.domain.state.ListResponse;
 import com.thecoderscorner.menu.domain.state.MenuTree;
+import com.thecoderscorner.menu.domain.state.PortableColor;
 import com.thecoderscorner.menu.domain.util.MenuItemHelper;
 import com.thecoderscorner.menu.mgr.DialogManager;
 import com.thecoderscorner.menu.mgr.MenuManagerServer;
@@ -18,7 +28,6 @@ import com.thecoderscorner.menu.remote.AuthStatus;
 import com.thecoderscorner.menu.remote.commands.DialogMode;
 import com.thecoderscorner.menu.remote.commands.MenuDialogCommand;
 import com.thecoderscorner.menu.remote.protocol.CorrelationId;
-import com.thecoderscorner.menuexample.tcmenu.MenuConfig;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -35,6 +44,11 @@ import javafx.stage.Stage;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * This is the local UI plugin, it provides a local UI that will by default render your menu tree onto the display using
+ * Java FX. The default UI can be overridden by adding custom panels to the navigationHeader, see below where we've done
+ * this for one of the submenu items.
+ */
 public class JfxLocalAutoUI extends Application {
     private static final AtomicReference<MenuConfig> GLOBAL_CONTEXT = new AtomicReference<>(null);
 
@@ -43,6 +57,8 @@ public class JfxLocalAutoUI extends Application {
     private LocalDialogManager dlgMgr;
     private MenuAppVersion versionData;
     private LocalTreeComponentManager localTree;
+    private EmbeddedJavaDemoMenu menuTree;
+    private GlobalSettings globalSettings;
 
     public static void setAppContext(MenuConfig context) {
         GLOBAL_CONTEXT.set(context);
@@ -52,8 +68,10 @@ public class JfxLocalAutoUI extends Application {
     public void start(Stage stage) {
         var ctx = GLOBAL_CONTEXT.get();
         mgr = ctx.getBean(MenuManagerServer.class);
+        menuTree = ctx.getBean(EmbeddedJavaDemoMenu.class);
         var executor = ctx.getBean(ScheduledExecutorService.class);
         versionData = ctx.getBean(MenuAppVersion.class);
+        globalSettings = ctx.getBean(GlobalSettings.class);
 
         dlgMgr = new LocalDialogManager();
         var auth = ctx.getBean(MenuAuthenticator.class);
@@ -70,9 +88,12 @@ public class JfxLocalAutoUI extends Application {
 
         var localController = new LocalMenuController();
         navigationHeader = ctx.getBean(JfxNavigationHeader.class);
+        var factory = new JfxMenuEditorFactory(localController, Platform::runLater, dlgMgr);
+        navigationHeader.addCustomMenuPanel(menuTree.getStatus(), new StatusPanelDrawable(menuTree, executor, factory,
+                localController, mgr, new CondColorFromGlobal(globalSettings)));
         navigationHeader.initialiseUI(dlgMgr, localController, scroller);
 
-        localTree = new LocalTreeComponentManager(mgr, navigationHeader);
+        localTree = new LocalTreeComponentManager(mgr, navigationHeader, executor);
         mgr.start();
         navigationHeader.pushMenuNavigation(MenuTree.ROOT, ctx.getBean(MenuItemStore.class));
 
@@ -198,6 +219,44 @@ public class JfxLocalAutoUI extends Application {
             if(remoteAllowed) {
                 mgr.sendCommand(new MenuDialogCommand(mode, title, message, button1, button2, CorrelationId.EMPTY_CORRELATION));
             }
+        }
+    }
+
+    private class CondColorFromGlobal implements ConditionalColoring {
+        private final ColorCustomizable colorCustomizable;
+        public CondColorFromGlobal(GlobalSettings globalSettings) {
+            colorCustomizable = new GlobalColorCustomizable(globalSettings);
+        }
+
+        private ControlColor getControlColor(EditorComponent.RenderingStatus status, ColorComponentType compType) {
+            if (status == EditorComponent.RenderingStatus.RECENT_UPDATE) compType = ColorComponentType.CUSTOM;
+            else if (status == EditorComponent.RenderingStatus.EDIT_IN_PROGRESS) compType = ColorComponentType.PENDING;
+            else if (status == EditorComponent.RenderingStatus.CORRELATION_ERROR) compType = ColorComponentType.ERROR;
+
+            return switch (compType) {
+                case TEXT_FIELD -> globalSettings.getTextColor();
+                case BUTTON -> globalSettings.getButtonColor();
+                case HIGHLIGHT -> globalSettings.getHighlightColor();
+                case CUSTOM -> globalSettings.getUpdateColor();
+                case DIALOG -> globalSettings.getDialogColor();
+                case ERROR -> globalSettings.getErrorColor();
+                case PENDING -> globalSettings.getPendingColor();
+            };
+        }
+
+        @Override
+        public PortableColor foregroundFor(EditorComponent.RenderingStatus status, ColorComponentType compType) {
+            return getControlColor(status, compType).getFg();
+        }
+
+        @Override
+        public PortableColor backgroundFor(EditorComponent.RenderingStatus status, ColorComponentType compType) {
+            return getControlColor(status, compType).getBg();
+        }
+
+        @Override
+        public ControlColor colorFor(EditorComponent.RenderingStatus status, ColorComponentType ty) {
+            return getControlColor(status, ty);
         }
     }
 }

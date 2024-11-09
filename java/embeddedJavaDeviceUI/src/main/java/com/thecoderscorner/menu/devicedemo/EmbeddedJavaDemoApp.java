@@ -1,4 +1,4 @@
-package com.thecoderscorner.menuexample.tcmenu;
+package com.thecoderscorner.menu.devicedemo;
 
 import com.thecoderscorner.menu.mgr.MenuInMenu;
 import com.thecoderscorner.menu.mgr.MenuManagerServer;
@@ -7,15 +7,16 @@ import com.thecoderscorner.menu.remote.ConnectMode;
 import com.thecoderscorner.menu.remote.LocalIdentifier;
 import com.thecoderscorner.menu.remote.MenuCommandProtocol;
 import com.thecoderscorner.menu.remote.socket.SocketBasedConnector;
-import com.thecoderscorner.menuexample.tcmenu.plugins.JfxLocalAutoUI;
-import com.thecoderscorner.menuexample.tcmenu.plugins.TcJettyWebServer;
+import com.thecoderscorner.menu.devicedemo.optional.JfxLocalAutoUI;
+import com.thecoderscorner.menu.devicedemo.optional.TcJettyWebServer;
 import javafx.application.Application;
 
 import java.time.Clock;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * This class is the application class and should not be edited, it will be recreated on each code generation
+ * This class is the application class that is run when the application starts. You can organize the application in
+ * here into a series of components. This is and example of how to arrange such an application.
  */
 public class EmbeddedJavaDemoApp {
     private final MenuManagerServer manager;
@@ -29,13 +30,23 @@ public class EmbeddedJavaDemoApp {
     }
 
     public void start() {
+        // Firstly we get the menu state serializer, this can load and save menu state
         var serializer = context.getBean(MenuStateSerialiser.class);
         serializer.loadMenuStatesAndApply();
+        // save states when the app shuts down
         Runtime.getRuntime().addShutdownHook(new Thread(serializer::saveMenuStates));
+        // the controller receives updates and things happen on the menu, we register it here.
         manager.addMenuManagerListener(context.getBean(EmbeddedJavaDemoController.class));
+        // See the method for more information.
         buildMenuInMenuComponents();
+
+        // Give the Local UI access to teh context
         JfxLocalAutoUI.setAppContext(context);
+
+        // here we start a webserver, it is initialised in the config file.
         manager.addConnectionManager(webServer);
+
+        // and finally, start the local JavaFX UI.
         Application.launch(JfxLocalAutoUI.class);
     }
 
@@ -43,6 +54,10 @@ public class EmbeddedJavaDemoApp {
         new EmbeddedJavaDemoApp().start();
     }
 
+    ///
+    /// here we demonstrate how to include menu in menu components. You can use tcMenu Designer to generate the menu in
+    /// menu components and add them here, it can build the entire method for you from `Code -> Menu In Menu`
+    ///
     public void buildMenuInMenuComponents() {
         MenuManagerServer menuManager = context.getBean(MenuManagerServer.class);
         MenuCommandProtocol protocol = context.getBean(MenuCommandProtocol.class);

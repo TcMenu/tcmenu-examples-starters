@@ -1,4 +1,4 @@
-package com.thecoderscorner.menuexample.tcmenu.plugins;
+package com.thecoderscorner.menu.devicedemo.optional;
 
 import com.thecoderscorner.menu.mgr.MenuManagerServer;
 import com.thecoderscorner.menu.mgr.ServerConnection;

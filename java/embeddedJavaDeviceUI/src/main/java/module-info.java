@@ -10,8 +10,8 @@ module com.thecoderscorner.menuexample.embeddedjavademo {
     requires javafx.base;
     requires javafx.controls;
     requires javafx.fxml;
-    exports com.thecoderscorner.menuexample.tcmenu.plugins;
-    opens com.thecoderscorner.menuexample.tcmenu;
+    exports com.thecoderscorner.menu.devicedemo.optional;
+    opens com.thecoderscorner.menu.devicedemo;
 
     requires org.eclipse.jetty.server;
     requires org.eclipse.jetty.servlet;

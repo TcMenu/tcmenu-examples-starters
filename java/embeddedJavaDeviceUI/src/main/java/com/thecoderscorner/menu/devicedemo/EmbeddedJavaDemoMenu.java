@@ -1,9 +1,22 @@
-package com.thecoderscorner.menuexample.tcmenu;
+package com.thecoderscorner.menu.devicedemo;
 
 import com.thecoderscorner.menu.domain.*;
 import com.thecoderscorner.menu.domain.state.MenuTree;
 import com.thecoderscorner.menu.persist.JsonMenuItemSerializer;
 
+/**
+ * The EmbeddedJavaDemoMenu class initializes a menu tree with predefined menu items
+ * and provides access to this tree and its JSON serializer. You can get an instance of
+ * this class from TcMenu Designer from menu: `Code -> Produce Java Menu Class`.
+ *
+ * In most applications you'd rename this class to something more suitable for your
+ * application, EG in an audio amplifier it may be called `AmplifierSettingsMenu`. You
+ * can refactor the class name in IntelliJ.
+ *
+ * This menu system can include various types of menu items such as analog,
+ * boolean, text items, etc. Each item in the menu is defined in the APP_MENU_ITEMS string
+ * in JSON format, which is then deserialized and loaded into a MenuTree object.
+ */
 public class EmbeddedJavaDemoMenu {
     private final static String APP_MENU_ITEMS = """
 tcMenuCopy:[
