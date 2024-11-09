@@ -2,6 +2,7 @@ package com.thecoderscorner.menu.devicedemo.optional;
 
 import com.thecoderscorner.embedcontrol.jfx.controlmgr.JfxMenuPresentable;
 import com.thecoderscorner.embedcontrol.jfx.controlmgr.JfxNavigationManager;
+import com.thecoderscorner.embedcontrol.jfx.controlmgr.UpdatablePanel;
 import com.thecoderscorner.menu.domain.MenuItem;
 import com.thecoderscorner.menu.mgr.MenuManagerListener;
 import com.thecoderscorner.menu.mgr.MenuManagerServer;
