@@ -11,12 +11,14 @@ It is likely before any public release that you'll want to customize the applica
 * `generalSettings.fxml` is the JavaFX settings form definition, only change this if you also modify the controller accordingly.
 * `mainWindow.fxml` is the main window when the app starts
 * `fximg/large_icon.png` is the icon drawn by the application forms.
-* `fximg/embedCONTROL.ico` is the start up application icon, only used by the packager on Windows
-* `fximg/MyIcons.icns` is the start up application icon, only used by the packager on macOS
+* `fximg/embedCONTROL.ico` is the start-up application icon, only used by the packager on Windows
+* `fximg/MyIcons.icns` is the start-up application icon, only used by the packager on macOS
 
 You can use the EmbedControl icon or logo to show compatibility with TagVal protocol. 
 
-You can also provide your own custom pages, each page must extend from `PanelPresentable` and can be added to the navigation manager, in this case the `JfxNavigationHeader` in `RemoteConnectionPanel` using `navigationManager.addCustomMenuPanel(subMenuCustom, myPanelPresentable)`.
+## Overriding how pages are drawn
+
+By default, every time you navigate to a menu structure you'll see an auto-generated page. You can also provide your own custom pages, each page must extend from `PanelPresentable` and can be added to the navigation manager, in this case the `JfxNavigationHeader` in `RemoteConnectionPanel` using `navigationManager.addCustomMenuPanel(subMenuCustom, myPanelPresentable)`. By the time the `RemoteConnectionPanel` is constructed you know which board/UUID you're connected with, and can then determine if you want to override drawing for any submenus. 
 
 ## Developing the App Locally
 
