@@ -49,6 +49,11 @@ import static com.thecoderscorner.embedcontrol.jfx.controlmgr.JfxNavigationHeade
 import static com.thecoderscorner.menu.domain.util.MenuItemHelper.asSubMenu;
 import static java.lang.System.Logger.Level.*;
 
+/// The RemoteConnectionPanel class manages a panel for remote connections within
+/// the application, providing methods for initiating, editing, and managing these connections.
+/// It extends `PanelPresentable` and `RemotePanelDisplayable` to integrate with the control management system.
+/// The class includes methods for initializing connection components, generating UI widgets,
+/// handling connection edits, and more.
 public class RemoteConnectionPanel implements PanelPresentable<Node>, RemotePanelDisplayable {
     private final System.Logger logger = System.getLogger(RemoteConnectionPanel.class.getSimpleName());
     private TcMenuPersistedConnection persistedConnection;

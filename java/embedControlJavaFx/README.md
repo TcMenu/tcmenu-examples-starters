@@ -2,7 +2,27 @@
 
 Contained in this package is the source code for the complete user interface that connects to a remote device running tcMenu, as long as the board is using one of the supported Serial or Network based plugins.
 
-Before releasing a package based on this we recommend that you change the icons and naming, especially if releasing publicly.
+## Customizing the application
+
+It is likely before any public release that you'll want to customize the application. This can easily be acheived by editing the images and forms stored in the `src/main/resources` folder. A few of the most common ones are provided here:
+
+* `fximg/large_icon.png` is the icon drawn by the application forms.
+* `fximg/embedCONTROL.ico` is the start up application icon, only used by the packager on Windows
+* `fximg/MyIcons.icns` is the start up application icon, only used by the packager on macOS
+* `aboutPage.fxml` is the JavaFX form definition for the about window.
+* `generalSettings.fxml` is the JavaFX settings form definition, only change this if you also modify the controller accordingly.
+* `mainWindow.fxml` is the main window when the app starts
+* `version.properties` is automatically set by maven during the build
+
+You can also provide your own custom pages, each page must extend from `PanelPresentable` and can be added to the navigation manager, in this case the `JfxNavigationHeader` in `RemoteConnectionPanel` using `navigationManager.addCustomMenuPanel(subMenuCustom, myPanelPresentable)`.
+
+## Developing the App Locally
+
+To develop the app locally we strongly recommend [IntelliJ either community or ultimate](https://www.jetbrains.com/idea/) but any other Java IDE should work as well. Ensure you also install the most recently available Java JDK and if you want to build from the command line, then apache maven too.
+
+From IntelliJ you can just create an empty project in the project root directory, and then from project structure import the maven POM file for this project.
+
+Once the project has fully loaded, you can run the application by opening `EmbedControlApp` and clicking on the run icon.
 
 ## Building a packaged version
 
