@@ -17,7 +17,7 @@
         <jfx.version>23.0.1</jfx.version>
         <jmetro.version>11.6.15</jmetro.version>
         <springframework.version>6.0.11</springframework.version>
-        <java.api.version>4.4.0-SNAPSHOT</java.api.version>
+        <java.api.version>4.4.0</java.api.version>
     </properties>
 
     <dependencies>

@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '23'
+        distribution: 'liberica'
+        cache: maven
+
+    - name: Build EmbedControl
+      run: mvn -B install -Dgpg.skip=true --file java/embedControlJavaFx/pom.xml
+  
+    - name: Build EmbeddedUi
+      run: mvn -B install -Dgpg.skip=true --file java/embeddedJavaDeviceUI/pom.xml
+
+    - name: Build Examples
+      run: mvn -B install -Dgpg.skip=true --file java/javaApiExamples/pom.xml
+
+    - name: Build Websocket Example
+      run: mvn -B install -Dgpg.skip=true --file java/javaApiWebsocketServer/pom.xml

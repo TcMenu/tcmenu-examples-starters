@@ -1,5 +1,9 @@
 # TcMenu examples and starter projects
 
+[![Java Build](https://github.com/TcMenu/tcmenu-examples-starters/actions/workflows/build.yaml/badge.svg)](https://github.com/TcMenu/tcmenu-examples-starters/actions/workflows/build.yaml)
+[![davetcc](https://img.shields.io/badge/davetcc-dev-blue.svg)](https://github.com/davetcc)
+[![JSC TechMinds](https://img.shields.io/badge/JSC-TechMinds-green.svg)](https://www.jsctm.cz)
+
 ## License
 
 * All examples are Apache licensed.
