@@ -11,10 +11,9 @@ import javafx.application.Platform;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Goes with the local UI, this handles changes on behalf of the local UI in both directions. You can add additional
- * functionality as needed here.
- */
+/// Part of the local UI, this handles changes on behalf of the local UI in both directions.
+/// It subscribes to the menu manager and ensures that any updates result in events being
+/// provided to the UI. It is implemented as a listener on the menu manager.
 public class LocalTreeComponentManager implements MenuManagerListener {
     private final MenuManagerServer menuMgr;
     private final JfxNavigationManager navigationManager;
@@ -46,15 +45,11 @@ public class LocalTreeComponentManager implements MenuManagerListener {
     @Override
     public void menuItemHasChanged(Object sender, MenuItem item) {
         Platform.runLater(() -> {
-            if (navigationManager.currentNavigationPanel() instanceof JfxMenuPresentable menuPanel) {
+            if (navigationManager.currentNavigationPanel() instanceof UpdatablePanel menuPanel) {
                 if (item == null) {
                     menuPanel.entirelyRebuildGrid();
                 } else {
-                    menuPanel.getGridComponent().itemHasUpdated(item);
-                }
-            } else if(navigationManager.currentNavigationPanel() instanceof UpdatablePanel panel) {
-                if(item != null) {
-                    panel.itemHasUpdated(item);
+                    menuPanel.itemHasUpdated(item);
                 }
             }
         });

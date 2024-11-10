@@ -14,7 +14,7 @@ It is likely before any public release that you'll want to customize the applica
 * `fximg/embedCONTROL.ico` is the start-up application icon, only used by the packager on Windows
 * `fximg/MyIcons.icns` is the start-up application icon, only used by the packager on macOS
 
-You can use the EmbedControl icon or logo to show compatibility with TagVal protocol. 
+## Layout of the application
 
 ## Overriding how pages are drawn
 

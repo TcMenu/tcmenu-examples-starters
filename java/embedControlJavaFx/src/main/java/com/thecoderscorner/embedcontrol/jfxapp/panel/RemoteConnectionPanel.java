@@ -371,7 +371,7 @@ public class RemoteConnectionPanel implements PanelPresentable<Node>, RemotePane
 
             // handle the case where it's already connected really quick!
             if (controller.getConnector().getAuthenticationStatus() == AuthStatus.CONNECTION_READY) {
-                if(navigationManager.currentNavigationPanel() instanceof JfxMenuPresentable) {
+                if(navigationManager.currentNavigationPanel() instanceof UpdatablePanel) {
                     statusHasChanged(AuthStatus.CONNECTION_READY);
                 }
             }

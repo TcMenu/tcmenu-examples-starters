@@ -44,11 +44,10 @@ import javafx.stage.Stage;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * This is the local UI plugin, it provides a local UI that will by default render your menu tree onto the display using
- * Java FX. The default UI can be overridden by adding custom panels to the navigationHeader, see below where we've done
- * this for one of the submenu items.
- */
+/// This provides a local UI frame that will by default render your menu tree onto the display using
+/// Java FX. The default UI can be overridden by adding custom panels to the navigationHeader, see below
+/// where we've done this for one of the submenu items. There is an image showing the overall structure
+/// within the readme file, along with a description of how it is intended to work.
 public class JfxLocalAutoUI extends Application {
     private static final AtomicReference<MenuConfig> GLOBAL_CONTEXT = new AtomicReference<>(null);
 
