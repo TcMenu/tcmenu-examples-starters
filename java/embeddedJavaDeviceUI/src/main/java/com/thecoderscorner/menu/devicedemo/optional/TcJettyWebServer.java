@@ -9,6 +9,10 @@ import com.thecoderscorner.menu.remote.commands.MenuCommand;
 import com.thecoderscorner.menu.remote.protocol.CommandProtocol;
 import com.thecoderscorner.menu.remote.protocol.ProtocolHelper;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServlet;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServletFactory;
+import org.eclipse.jetty.ee10.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -20,6 +24,8 @@ import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Clock;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,26 +62,25 @@ public class TcJettyWebServer implements ServerConnectionManager {
         try {
             this.listener = listener;
             server = new Server(portNumber);
-            var serverConnector = new ServerConnector(server);
-            server.addConnector(serverConnector);
 
             var staticHandler = new ResourceHandler();
             staticHandler.setDirAllowed(listDirectories);
             staticHandler.setWelcomeFiles("index.html");
-            staticHandler.setBaseResource(ResourceFactory.of(serverConnector).newResource(resourceDirectory));
+            Path webRootPath = Paths.get(resourceDirectory).toAbsolutePath().normalize();
+            staticHandler.setBaseResource(ResourceFactory.of(server).newResource(webRootPath));
             var contextHandler = new ContextHandler();
             contextHandler.setHandler(staticHandler);
 
-            ServletContextHandler static_handler = new ServletContextHandler();
-            static_handler.insertHandler(new GzipHandler());
-            static_handler.setContextPath("/");
-            static_handler.setBaseResourceAsString(resource_base);
+            ServletContextHandler servletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
+            servletContext.setContextPath("/");
 
-
-            webSockEndpoint = new TcJettyWebSocketEndpoint();
+            JettyWebSocketServletContainerInitializer.configure(servletContext, null);
+            var wsHolder = new ServletHolder("tcmenu", new TcMenuWebSocket());
+            servletContext.addServlet(wsHolder, "/ws/*");
 
             var handlers = new ContextHandlerCollection();
             handlers.addHandler(contextHandler);
+            handlers.addHandler(servletContext);
             server.setHandler(handlers);
 
             server.start();
@@ -218,6 +223,15 @@ public class TcJettyWebServer implements ServerConnectionManager {
 
         public void socketDidClose() {
             if (connectionListener.get() != null) connectionListener.get().accept(this, false);
+        }
+    }
+
+    public class TcMenuWebSocket extends JettyWebSocketServlet
+    {
+        @Override
+        public void configure(JettyWebSocketServletFactory factory)
+        {
+            factory.register(TcJettyWebSocketEndpoint.class);
         }
     }
 }

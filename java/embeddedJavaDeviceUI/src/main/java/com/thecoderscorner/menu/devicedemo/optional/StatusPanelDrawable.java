@@ -17,25 +17,22 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.thecoderscorner.embedcontrol.core.controlmgr.EditorComponent.PortableAlignment;
 import static com.thecoderscorner.embedcontrol.core.controlmgr.color.ControlColor.*;
-import static com.thecoderscorner.embedcontrol.customization.customdraw.CustomDrawingConfiguration.NO_CUSTOM_DRAWING;
 import static com.thecoderscorner.embedcontrol.customization.customdraw.CustomDrawingConfiguration.NumericColorRange;
 
 /// Demonstrates how to create your own panel to be presented instead of an automatic menu panel. Simply
 /// register this panel with the navigation manager class, and it will be presented instead of the standard
-/// panel. See `JfxLocalAutoUI` where this panel is added. As the base class extends `BaseCustomMenuPanel`
+/// panel. See `JfxLocalAutoUI` where this panel is added. As the class extends `BaseCustomMenuPanel`
 /// it will automatically be told when menu items have updated, and be provided with a tick function for
 /// animations. You can override the methods in `UpdatablePanel` if you use controls other than the
 /// standard menu controls created from `ComponentSettings` to update such items yourself.
@@ -70,12 +67,13 @@ public class StatusPanelDrawable extends BaseCustomMenuPanel {
         }
 
         // now we add some labels into the grid on the left for each menu item
-        gridPane.add(new Label("Case Temperature"), 0, 0);
-        gridPane.add(new Label("Light Color"), 0, 1);
-        gridPane.add(new Label("Authenticator"), 0, 2);
+        putIntoGrid(ComponentSettingsBuilder.forText("Case Temperature", globalColors).withRowCol(0, 0));
+        putIntoGrid(ComponentSettingsBuilder.forText("Light Color", globalColors).withRowCol(1, 0));
+        putIntoGrid(ComponentSettingsBuilder.forText("Authenticator", globalColors).withRowCol(2, 0));
 
-        // and on the right we create a custom simulation button, that when we click it causes some
-        // menu items to update automatically
+        // and on the right we create a custom simulation button that uses native components showing that these forms
+        // can not only use menu item components, but also native JavaFX components. When we click it causes some menu
+        // items to update automatically.
         gridPane.add(new Label("Start Simulating"), 2, 0);
         var runSimButton = new Button("Run Sim");
         runSimButton.setOnAction(_ -> executor.scheduleAtFixedRate(this::updateTemp, 200L, 200L, TimeUnit.MILLISECONDS));
@@ -87,7 +85,6 @@ public class StatusPanelDrawable extends BaseCustomMenuPanel {
         // and now we add in a component that will render using the VU meter style. It is a float item, and we provide
         // custom drawing configuration for it, so it has three ranges: green, orange, red. There are many forms of
         // custom drawing, this is one common example.
-        FontInformation font100Pc = new FontInformation(100, SizeMeasurement.PERCENT);
         var greenOrangeRedNumericCustom = new NumberCustomDrawingConfiguration(List.of(
                 new NumericColorRange(0.0, 70.0, fromFxColor(Color.GREEN), fromFxColor(Color.WHITE)),
                 new NumericColorRange(70.0, 90.0, fromFxColor(Color.ORANGE), fromFxColor(Color.WHITE)),
@@ -106,14 +103,14 @@ public class StatusPanelDrawable extends BaseCustomMenuPanel {
 
         putIntoGrid(ComponentSettingsBuilder.forMenuItem(menuDef.getStatusCaseTempOC(), globalColors)
                         .withJustification(PortableAlignment.CENTER)
-                        .withPosition(new ComponentPositioning(0, 1))
+                        .withRowCol(0, 1)
                         .withDrawMode(RedrawingMode.SHOW_VALUE)
                         .withControlType(ControlType.VU_METER)
                         .withCustomDrawing(greenOrangeRedNumericCustom));
 
         // Here we create an IoT manager button that represents the IoT Monitor menu item
         putIntoGrid(ComponentSettingsBuilder.forMenuItem(menuDef.getStatusIoTMonitor(), globalColors)
-                .withPosition(new ComponentPositioning(2, 1)));
+                        .withRowCol(2, 1));
 
         // Here we create an RGB control from the status light color menu item.
         putIntoGrid(ComponentSettingsBuilder.forMenuItem(menuDef.getStatusLightColor(), globalColors)
@@ -136,6 +133,7 @@ public class StatusPanelDrawable extends BaseCustomMenuPanel {
 
     @Override
     public void entirelyRebuildGrid() {
-        // in here you put anything that would be needed should the menu structurally change.
+        // In here you put anything that would be needed should the menu structurally change. This will be called
+        // fairly infrequently. Example would be when a connection is lost and then subsequent bootstrap.
     }
 }

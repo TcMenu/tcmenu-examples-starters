@@ -11,6 +11,5 @@ module com.thecoderscorner.menuexample.embeddedjavademo {
     exports com.thecoderscorner.menu.devicedemo.optional;
     opens com.thecoderscorner.menu.devicedemo;
 
-    requires org.eclipse.jetty.websocket.api;
-    requires org.eclipse.jetty.ee10.servlet;
+    requires org.eclipse.jetty.ee10.websocket.jetty.server;
 }
