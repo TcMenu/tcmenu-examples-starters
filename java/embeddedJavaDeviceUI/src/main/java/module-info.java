@@ -1,7 +1,5 @@
 module com.thecoderscorner.menuexample.embeddedjavademo {
-    requires java.logging;
     requires java.prefs;
-    requires java.desktop;
     requires com.google.gson;
     requires com.fazecast.jSerialComm;
     requires com.thecoderscorner.tcmenu.javaapi;
@@ -13,8 +11,6 @@ module com.thecoderscorner.menuexample.embeddedjavademo {
     exports com.thecoderscorner.menu.devicedemo.optional;
     opens com.thecoderscorner.menu.devicedemo;
 
-    requires org.eclipse.jetty.server;
-    requires org.eclipse.jetty.servlet;
-    requires jetty.websocket.api;
-    requires org.eclipse.jetty.websocket.javax.server;
+    requires org.eclipse.jetty.websocket.api;
+    requires org.eclipse.jetty.ee10.servlet;
 }
