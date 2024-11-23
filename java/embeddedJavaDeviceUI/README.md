@@ -38,8 +38,41 @@ If you used a modular build (IE you have a `module-info.java` file in the `src/m
 
 ## The simple application context and the MenuConfig class
 
-The menu configuration system within TcMenu allows for very simple arrangements of components. We populate the context with all the components needed to build a UI using JavaFX. There is no absolute requirement that you have to use the UI components, and in fact you could have either no UI, or a different UI technology.
+The menu configuration system within TcMenu allows for very simple arrangements of components. To get you started, we've populated the context with all the components needed to build a simple UI using JavaFX, and a webserver that can serve up EmbedControlJS . There is no absolute requirement that you have to keep any of the optional components, and in fact you could have either no UI, or a different UI technology.
 
-Consider the `MenuConfig` class somewhat like a storage object that can hold instances of objects needed for the running of the application. configuration  
+### Properties files and environmental settings
+
+By default properties files are supported and they will be loaded into the `MenuConfig` during initialisation using the following rules:
+
+1. the environment is specified either during the construction in the `App` file, or it is set as a system property `-Dtc.env=dev` for example. The default environment is `dev`.
+2. A file called `application.properties` will be loaded, this file must exist. This is the lowest precidence.
+3. Additionally the file `application_[env].properties` where `env` is the present environment name. For example by default `application_dev.properties` would be searched for, if it exists, it would have higher precedence than the above.
+4. You can read properties using method `mandatoryStringProp`, `propAsIntWithDefault` and `getResolvedProperties`. You can find the environment using `getEnvironment`. 
+
+### Adding your objects to the context and querying it
+
+Consider the `MenuConfig` class somewhat like a storage object that can hold instances of objects needed for the running of the application. You can add methods to the class that are annotated with `@TcComponent` and these will be added into the `context`, and any such method can take as many parameters as needed, and the parameters will be automatically wired where possible from the objects already available in the context. Some degree of dependency is allowed and supported. Let's take an example that we a `Car` and that object needs an `Engine`. In the menu config we'd add something like:
+
+    public class MenuConfig extends BaseMenuConfig {
+        // other configuration...
+        public Engine myEngine() {
+            in cylinders = 
+            return new Engine();
+        }
+        public Car myCar(Engine engine) {
+            return new Car(engine);
+        }
+        // other configuration...
+    }
+
+We can see above that `myCar` needs an `Engine` and that there is an engine in the context, so the engine parameter will be wired during initialisation.
 
 ## More details about using the Controller class
+
+The controller class is where you receive updates as events happen on the menu, either locally or remotely. You can then take action based upon the new state. There are several ways that you can get updates:
+
+1. You can get updates when a particular item changes, to do this we create a method that is annotated with `@MenuCallback(id=n)` where `n` is ID of the menu item. The function should follow the signature `void methodName(Object sender, MenuItem item)`. TcMenu Designer will generate these automatically wherever a callback is defined.
+2. There is a callback for changes in every menu item, you can hook into this if you prefer and determine yourself which item is updated by overriding: `void menuItemHasChanged(Object sender, MenuItem item)`.
+3. You can handle callbacks from list items by providing an additional parameter as follows `@MenuCallback(id=15, listResult=true)` and in this case we must add a parameter of type `ListResponse listResponse` after the `sender` and `item`, and the response tells you how the interaction with the list ended.
+4. You can use the controller to populate scroll choice items. Again designer should do this automatically if it detects a scroll choice item. For this you annotate a method with the `@ScrollChoiceValueRetriever(id=n)` where n is the ID of the menu item. You will receive a callback whenever the scroll choice item needs a value and the signature is: `String myScrollChoiceNeedsValue(ScrollChoiceMenuItem item, CurrentScrollPosition position)`
+ 
