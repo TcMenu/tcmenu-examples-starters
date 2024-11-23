@@ -76,3 +76,8 @@ The controller class is where you receive updates as events happen on the menu, 
 3. You can handle callbacks from list items by providing an additional parameter as follows `@MenuCallback(id=15, listResult=true)` and in this case we must add a parameter of type `ListResponse listResponse` after the `sender` and `item`, and the response tells you how the interaction with the list ended.
 4. You can use the controller to populate scroll choice items. Again designer should do this automatically if it detects a scroll choice item. For this you annotate a method with the `@ScrollChoiceValueRetriever(id=n)` where n is the ID of the menu item. You will receive a callback whenever the scroll choice item needs a value and the signature is: `String myScrollChoiceNeedsValue(ScrollChoiceMenuItem item, CurrentScrollPosition position)`
  
+## Auto-UI and creating your own panels
+
+For rendering you have two choices, first you can use the Auto-UI, this attempts to provide a graphical layout of your menu items, and for many simple menu applications it may be enough. However, for panels where you need customisation, this is also possible.
+
+All EmebedControl graphical panels that make up the JavaFX UI extend from  `PanelPresentable<Node>`. This contains the naming of a panel, if it can be navigated from, and if it can be dismissed. In order to create your own custom UIs for a given sub menu you simply create a class that extends from `BaseCustomMenuPanel` and register it with the navigation manager. See `JfxLocalAutoUI.java` where we register `StatusPanelDrawable` to draw the status menu with a custom panel.
