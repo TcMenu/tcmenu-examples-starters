@@ -91,6 +91,11 @@ public class RemoteConnectionPanel implements PanelPresentable<Node>, RemotePane
             control = new RemoteMenuComponentControl(controller, navigationManager);
             dialogManager = new RemoteDialogManager();
             editorFactory = new JfxMenuEditorFactory(control, Platform::runLater, dialogManager);
+            //
+            // at this point you can add custom panels to render certain submenus. You could check on the UUID of the
+            // connection and then add custom panels. See the `embeddedJavaDeviceUI` where `StatusPanelDrawable` is
+            // added to replace the Auto-UI for the status menu. See ``
+            //
         } catch (Exception e) {
             logger.log(ERROR, "Failed to start controller " + persistedConnection.getName(), e);
         }

@@ -16,7 +16,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * This class is the application class that is run when the application starts. You can organize the application in
- * here into a series of components. This is and example of how to arrange such an application.
+ * here into a series of components. This is the starting point of a Java embedded application, you can rearrange
+ * as needed, but to continue round trips with the designer UI ensure the file with menu definitions remains unaltered
+ * and that the controller is kept in the same place.
  */
 public class EmbeddedJavaDemoApp {
     private final MenuManagerServer manager;

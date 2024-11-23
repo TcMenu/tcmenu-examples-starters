@@ -55,7 +55,6 @@ public class JfxLocalAutoUI extends Application {
     private JfxNavigationHeader navigationHeader;
     private LocalDialogManager dlgMgr;
     private MenuAppVersion versionData;
-    private LocalTreeComponentManager localTree;
     private EmbeddedJavaDemoMenu menuTree;
     private GlobalSettings globalSettings;
 
@@ -92,7 +91,7 @@ public class JfxLocalAutoUI extends Application {
                 localController, mgr, new CondColorFromGlobal(globalSettings)));
         navigationHeader.initialiseUI(dlgMgr, localController, scroller);
 
-        localTree = new LocalTreeComponentManager(mgr, navigationHeader, executor);
+        var localTree = new LocalTreeComponentManager(mgr, navigationHeader, executor);
         mgr.start();
         navigationHeader.pushMenuNavigation(MenuTree.ROOT, ctx.getBean(MenuItemStore.class));
 

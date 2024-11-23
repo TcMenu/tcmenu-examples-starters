@@ -10,9 +10,9 @@ The application is split up into several files:
 
 ### Components required for operation
 
-* `EmbeddedJavaDemoApp` - this is the class that starts up your application and initialises any plugins you selected. You should not touch this class as it is overwritten every time around.
+* `EmbeddedJavaDemoApp` - this is the class that starts up your application and initialises any plugins you selected. This is the starting point and you're free to rearrange as needed. 
 * `EmbeddedJavaDemoMenu` - this is the class that holds all the menu definitions and the menu tree. It is available in the spring context, and you can inject it into any of your components that need it. It also has short-cut methods to get every menu item.
-* `EmbeddedJavaDemoController` - this is where any callbacks that you register go, at the moment we support only one controller, in future we may provide support for more than one. Each function callback that you declare in TcMenu Designer will turn into a method in here. This also allows you to listen for any menu item, and for start and stop events. Further, you can change the controller's constructor to include other components if needed.
+* `EmbeddedJavaDemoController` - this is the controller for the menu front-end. Any callbacks that you register in designer will go here, at the moment we support only one controller, in future we may provide support for more than one. Each function callback that you declare in TcMenu Designer will turn into a method in here. This also allows you to listen for any menu item, and for start and stop events. Further, you can change the controller's constructor to include other components if needed. Scroll choice callbacks that request the data for scroll choice items are also added. 
 * `MenuConfig` - this is generally used to wire together all of your components. You can create additional components in this class by creating a function annotated with `@TcComponent`, any parameters to the function will be auto-wired using components already available in the context.
 
 ### Components that are optional
@@ -36,3 +36,10 @@ If you use the standard maven setup, after running the above build steps, you sh
 
 If you used a modular build (IE you have a `module-info.java` file in the `src/main/java` directory) then to run the application ensure that the right version of Java using `java -version` is on your path and then the run command should be `java --module-path ../deps "-Dprism.lcdtext=false" --add-modules com.thecoderscorner.menuexample.embeddedjavademo com.thecoderscorner.menu.devicedemo.EmbeddedJavaDemoApp`. Given TcMenu is JPMS compliant, it can be packaged using `jpackage`.
 
+## The simple application context and the MenuConfig class
+
+The menu configuration system within TcMenu allows for very simple arrangements of components. We populate the context with all the components needed to build a UI using JavaFX. There is no absolute requirement that you have to use the UI components, and in fact you could have either no UI, or a different UI technology.
+
+Consider the `MenuConfig` class somewhat like a storage object that can hold instances of objects needed for the running of the application. configuration  
+
+## More details about using the Controller class

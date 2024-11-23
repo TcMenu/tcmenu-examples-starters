@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 /// This class creates an application context out of all these components, and you can request any components that are
 /// put into the context using getBean(ClassName.class). See the base class `BaseMenuConfig` for more details.
+///
 /// In summary, every function annotated with `@TcComponent` will be added to the "context" and you can then request
 /// it later using `getBean`. Consider it a lightweight spring that is JPMS module system compliant. Anything that is
 /// marked as a `TcComponent` will be available automatically to other methods marked `TcComponent`.
