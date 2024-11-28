@@ -14,8 +14,6 @@ It is likely before any public release that you'll want to customize the applica
 * `fximg/embedCONTROL.ico` is the start-up application icon, only used by the packager on Windows
 * `fximg/MyIcons.icns` is the start-up application icon, only used by the packager on macOS
 
-## Layout of the application
-
 ## Overriding how pages are drawn
 
 By default, every time you navigate to a menu structure you'll see an auto-generated page. You can also provide your own custom pages, each page must extend from `PanelPresentable` and can be added to the navigation manager, in this case the `JfxNavigationHeader` in `RemoteConnectionPanel` using `navigationManager.addCustomMenuPanel(subMenuCustom, myPanelPresentable)`. By the time the `RemoteConnectionPanel` is constructed you know which board/UUID you're connected with, and can then determine if you want to override drawing for any submenus. 
@@ -30,7 +28,9 @@ Once the project has fully loaded, you can run the application by opening `Embed
 
 ## Building a packaged version
 
-The below will produce you a package that can be used on most platforms supported by Java. It will use the [Java SDK jpackage tool](https://docs.oracle.com/en/java/javase/21/docs/specs/man/jpackage.html) to build a native image that can be installed onto a user system. 
+The below will produce you a package that can be used on most platforms supported by Java. It will use the [Java SDK jpackage tool](https://docs.oracle.com/en/java/javase/21/docs/specs/man/jpackage.html) to build a native image that can be installed onto a user system.
+
+From the command line you can use Apache Maven to do the build. Simply `mvn clean install` in this directory will build the app into the `target` directory.
 
 ### Building the embedCONTROLFx desktop UI for Windows
 

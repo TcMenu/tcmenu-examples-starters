@@ -4,6 +4,24 @@ This application is the starting point for building an embedded Java TcMenu appl
 
 This app framework is somewhat opinionated, but if it doesn't match with what you need, you can always look at the Java API examples.
 
+## Creating a project based on this code
+
+In either case the create project process will output a starter project very similar to this working project, you can then decide which of the optional components you want to keep, these are the components that are in the `optional` package. By default it will have a Jetty webserver that serves up browser based EmbedControlJS and a JavaFX UI.
+
+### From the CLI simply
+
+    tcmenu create-project -p RASPBERRY_PIJ -v -n "com.example.menu" "SimpleProject"
+
+Where `com.example.menu` is the Java package to put the source code in, and the project will be called "SimpleProject".
+
+### From TcMenu Designer UI
+
+Go to the `File -> New` option and select to create a Java/Raspberry PI project. Ensure the package name is filled in with the Java package name.
+
+### Loading into an IDE
+
+We use IntelliJ, but many IDEs support Java and you can consult their documentation for importing a maven (pom.xml) project. In IntelliJ simply create a new project from the POM file. 
+
 ## How the app is organised.
 
 The application is split up into several files:
@@ -56,7 +74,7 @@ Consider the `MenuConfig` class somewhat like a storage object that can hold ins
     public class MenuConfig extends BaseMenuConfig {
         // other configuration...
         public Engine myEngine() {
-            in cylinders = 
+            int cylinders = Integer.parseInt(mandatoryStringProp("engine.cylinders"));
             return new Engine();
         }
         public Car myCar(Engine engine) {
