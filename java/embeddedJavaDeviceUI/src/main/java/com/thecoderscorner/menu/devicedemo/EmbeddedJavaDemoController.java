@@ -96,8 +96,10 @@ public class EmbeddedJavaDemoController implements MenuManagerListener {
                     }
             });
 
+            // TEMPLATE_COPY=off
             // add some data to the list menu item.
             MenuItemHelper.setMenuState(menuDef.getStatusMyListItem(), List.of("Item 1", "Item 2", "Item 3"), menuDef.getMenuTree());
+            // TEMPLATE_COPY=on
         });
     }
 

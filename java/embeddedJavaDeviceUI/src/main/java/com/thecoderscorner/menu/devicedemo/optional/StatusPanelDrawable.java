@@ -1,3 +1,4 @@
+// TEMPLATE_COPY=off
 package com.thecoderscorner.menu.devicedemo.optional;
 
 import com.thecoderscorner.embedcontrol.core.controlmgr.*;

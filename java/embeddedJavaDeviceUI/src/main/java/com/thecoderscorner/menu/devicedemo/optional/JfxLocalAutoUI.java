@@ -87,8 +87,15 @@ public class JfxLocalAutoUI extends Application {
         var localController = new LocalMenuController();
         navigationHeader = ctx.getBean(JfxNavigationHeader.class);
         var factory = new JfxMenuEditorFactory(localController, Platform::runLater, dlgMgr);
+
+        // TEMPLATE_COPY=off
+        // The following demonstrates how to add a custom panel to your project for a particular menu item. See the
+        // StatusPanelDrawable class for more information. You provide the menu item for which custom drawing is needed
+        // and the panel that should be presented instead of the AutoUI.
         navigationHeader.addCustomMenuPanel(menuTree.getStatus(), new StatusPanelDrawable(menuTree, executor, factory,
                 localController, mgr, new CondColorFromGlobal(globalSettings)));
+        // TEMPLATE_COPY=on
+
         navigationHeader.initialiseUI(dlgMgr, localController, scroller);
 
         var localTree = new LocalTreeComponentManager(mgr, navigationHeader, executor);
