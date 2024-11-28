@@ -8,11 +8,11 @@ This app framework is somewhat opinionated, but if it doesn't match with what yo
 
 In either case the create project process will output a starter project very similar to this working project, you can then decide which of the optional components you want to keep, these are the components that are in the `optional` package. By default it will have a Jetty webserver that serves up browser based EmbedControlJS and a JavaFX UI.
 
-### From the CLI simply
+### From the CLI
 
     tcmenu create-project -p RASPBERRY_PIJ -v -n "com.example.menu" "SimpleProject"
 
-Where `com.example.menu` is the Java package to put the source code in, and the project will be called "SimpleProject".
+Simply run the above command in the directory where the new project should be created. Where `com.example.menu` is the Java package to put the source code in, and the project will be called "SimpleProject". Rename as appropriate.
 
 ### From TcMenu Designer UI
 
