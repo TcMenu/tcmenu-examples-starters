@@ -23,14 +23,14 @@ import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.Logger.Level.INFO;
 
-/**
- * This class represents the controller for the EmbeddedJavaDemoMenu. It implements the MenuManagerListener interface.
- * The controller is responsible for creating instances of objects that are required around the application, you can
- * get hold of these objects later using getBean, and you can add extra ones wrapping an object creation with asBean(..).
- *
- * Unless you delete this file it will not be recreated as you can edit it too.
- * @see MenuManagerListener
- */
+/// The EmbeddedJavaDemoController class implements the MenuManagerListener interface
+/// to handle various interactions with the menu system and manage the graphical user interface
+/// components of the application. TcMenu Designer will update the file to add any new callbacks
+/// that are added in designer during a round trip.
+///
+/// You can add any additional object dependencies you need in the constructor, this object is
+/// created in `MenuConfig` and will be automatically wired using any components declared in there.
+/// @see MenuConfig
 public class EmbeddedJavaDemoController implements MenuManagerListener {
     private final System.Logger logger = System.getLogger(getClass().getSimpleName());
     private final EmbeddedJavaDemoMenu  menuDef;
@@ -45,6 +45,8 @@ public class EmbeddedJavaDemoController implements MenuManagerListener {
         this.executorService = executorService;
         this.globalSettings = settings;
     }
+
+    // Start of menu callbacks
 
     @MenuCallback(id=15, listResult=true)
     public void listHasChanged(Object sender, RuntimeListMenuItem item, ListResponse listResponse) {
@@ -78,20 +80,26 @@ public class EmbeddedJavaDemoController implements MenuManagerListener {
     @Override
     public void managerWillStart() {
         Platform.runLater(() -> {
+            // Here we demonstrate adding a couple of title widgets that appear on the right of the navigation bar.
+            // This is an example showing how you could present the current WiFi signal strength. Just replace the
+            // random value we set it to in the task below.
             TitleWidget<Image> wifiWidget = JfxNavigationHeader.standardWifiWidget();
             navigationManager.addTitleWidget(wifiWidget);
             executorService.scheduleAtFixedRate(() -> wifiWidget.setCurrentState((int) (Math.random() * 5)), 1000, 100, TimeUnit.MILLISECONDS);
 
+            // Here we add a settings widget that is used to present a settings panel in the current stack.
             TitleWidget<Image> settingsWidget = JfxNavigationHeader.standardSettingsWidget();
             navigationManager.addTitleWidget(settingsWidget);
-
             navigationManager.addWidgetClickedListener((actionEvent, widget) -> {
                     if(widget == settingsWidget) {
                         navigationManager.pushNavigation(new ColorSettingsPresentable(globalSettings, navigationManager, "Global", false));
                     }
             });
 
+            // TEMPLATE_COPY=off
+            // add some data to the list menu item.
             MenuItemHelper.setMenuState(menuDef.getStatusMyListItem(), List.of("Item 1", "Item 2", "Item 3"), menuDef.getMenuTree());
+            // TEMPLATE_COPY=on
         });
     }
 

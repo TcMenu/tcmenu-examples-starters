@@ -8,19 +8,24 @@ import com.thecoderscorner.menu.remote.MenuCommandProtocol;
 import com.thecoderscorner.menu.remote.commands.MenuCommand;
 import com.thecoderscorner.menu.remote.protocol.CommandProtocol;
 import com.thecoderscorner.menu.remote.protocol.ProtocolHelper;
-import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServlet;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServletFactory;
+import org.eclipse.jetty.ee10.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.websocket.javax.server.config.JavaxWebSocketServletContainerInitializer;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.util.resource.ResourceFactory;
+import org.eclipse.jetty.websocket.api.Callback;
+import org.eclipse.jetty.websocket.api.Session;
 
-import javax.websocket.Session;
-import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Clock;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,36 +62,25 @@ public class TcJettyWebServer implements ServerConnectionManager {
         try {
             this.listener = listener;
             server = new Server(portNumber);
-            var serverConnector = new ServerConnector(server);
-            server.addConnector(serverConnector);
 
             var staticHandler = new ResourceHandler();
-            staticHandler.setDirectoriesListed(listDirectories);
-            staticHandler.setWelcomeFiles(new String[]{"index.html"});
-            staticHandler.setBaseResource(Resource.newResource(resourceDirectory));
+            staticHandler.setDirAllowed(listDirectories);
+            staticHandler.setWelcomeFiles("index.html");
+            Path webRootPath = Paths.get(resourceDirectory).toAbsolutePath().normalize();
+            staticHandler.setBaseResource(ResourceFactory.of(server).newResource(webRootPath));
             var contextHandler = new ContextHandler();
             contextHandler.setHandler(staticHandler);
 
-            webSockEndpoint = new TcJettyWebSocketEndpoint();
+            ServletContextHandler servletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
+            servletContext.setContextPath("/");
 
-            // Create a ServletContextHandler with the given context path.
-            var serverHandler = new ServletContextHandler(server, "/");
-            // Initialize javax.websocket layer
-            JavaxWebSocketServletContainerInitializer.configure(serverHandler, (servletContext, wsContainer) ->
-            {
-                // This lambda will be called at the appropriate place in the
-                // ServletContext initialization phase where you can initialize
-                // and configure  your websocket container.
+            JettyWebSocketServletContainerInitializer.configure(servletContext, null);
+            var wsHolder = new ServletHolder("tcmenu", new TcMenuWebSocket());
+            servletContext.addServlet(wsHolder, "/ws/*");
 
-                // Configure defaults for container
-                wsContainer.setDefaultMaxTextMessageBufferSize(65535);
-
-                // Add WebSocket endpoint to javax.websocket layer
-                wsContainer.addEndpoint(TcJettyWebSocketEndpoint.class);
-            });
-
-            var handlers = new HandlerList();
-            handlers.setHandlers(new Handler[]{contextHandler, serverHandler});
+            var handlers = new ContextHandlerCollection();
+            handlers.addHandler(contextHandler);
+            handlers.addHandler(servletContext);
             server.setHandler(handlers);
 
             server.start();
@@ -151,8 +145,8 @@ public class TcJettyWebServer implements ServerConnectionManager {
             try {
                 session.close();
                 if (connectionListener.get() != null) connectionListener.get().accept(this, false);
-            } catch (IOException e) {
-                logger.log(System.Logger.Level.ERROR, "Close on session failed ", session.getId());
+            } catch (Exception e) {
+                logger.log(System.Logger.Level.ERROR, "Close on session failed ", session);
             }
         }
 
@@ -169,20 +163,20 @@ public class TcJettyWebServer implements ServerConnectionManager {
         @Override
         public void sendCommand(MenuCommand command) {
             lastMsgOut.set(clock.millis());
-            logger.log(System.Logger.Level.DEBUG, session.getId() + " - " + command);
+            logger.log(System.Logger.Level.DEBUG, session + " - " + command);
             try {
                 synchronized (socketLock) {
                     if(protocol.getProtocolForCmd(command) == CommandProtocol.TAG_VAL_PROTOCOL) {
                         String text = protocolHelper.protoBufferToText(command);
-                        session.getBasicRemote().sendText(text);
+                        session.sendText(text, Callback.NOOP);
                     } else {
                         protocol.toChannel(outputBuffer, command);
                         outputBuffer.flip();
-                        session.getBasicRemote().sendBinary(outputBuffer);
+                        session.sendBinary(outputBuffer, Callback.NOOP);
                     }
                 }
             } catch (Exception e) {
-                logger.log(System.Logger.Level.ERROR, "Socket failed to write - " + session.getId(), e);
+                logger.log(System.Logger.Level.ERROR, "Socket failed to write - " + session, e);
                 closeConnection();
             }
         }
@@ -214,7 +208,7 @@ public class TcJettyWebServer implements ServerConnectionManager {
 
         @Override
         public String getConnectionName() {
-            return String.format("JettyWS %s as %s", session.getId(), getUserName());
+            return String.format("JettyWS %s as %s", session, getUserName());
         }
 
         public void stringDataRx(String data) {
@@ -223,12 +217,21 @@ public class TcJettyWebServer implements ServerConnectionManager {
                 protocolHelper.dataReceived(this, data);
             } catch (Exception e) {
                 closeConnection();
-                logger.log(System.Logger.Level.ERROR, "Problem while reading data from " + session.getId(), e);
+                logger.log(System.Logger.Level.ERROR, "Problem while reading data from " + session, e);
             }
         }
 
         public void socketDidClose() {
             if (connectionListener.get() != null) connectionListener.get().accept(this, false);
+        }
+    }
+
+    public class TcMenuWebSocket extends JettyWebSocketServlet
+    {
+        @Override
+        public void configure(JettyWebSocketServletFactory factory)
+        {
+            factory.register(TcJettyWebSocketEndpoint.class);
         }
     }
 }

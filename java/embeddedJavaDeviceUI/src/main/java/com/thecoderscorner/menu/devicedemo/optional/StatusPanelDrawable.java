@@ -1,90 +1,64 @@
+// TEMPLATE_COPY=off
 package com.thecoderscorner.menu.devicedemo.optional;
 
 import com.thecoderscorner.embedcontrol.core.controlmgr.*;
 import com.thecoderscorner.embedcontrol.core.controlmgr.color.ConditionalColoring;
+import com.thecoderscorner.embedcontrol.core.controlmgr.color.ControlColor;
 import com.thecoderscorner.embedcontrol.customization.FontInformation;
 import com.thecoderscorner.embedcontrol.customization.FontInformation.SizeMeasurement;
+import com.thecoderscorner.embedcontrol.customization.customdraw.BooleanCustomDrawingConfiguration;
 import com.thecoderscorner.embedcontrol.customization.customdraw.NumberCustomDrawingConfiguration;
+import com.thecoderscorner.embedcontrol.customization.customdraw.StringCustomDrawingConfiguration;
+import com.thecoderscorner.embedcontrol.jfx.controlmgr.panels.BaseCustomMenuPanel;
 import com.thecoderscorner.menu.devicedemo.EmbeddedJavaDemoMenu;
-import com.thecoderscorner.menu.domain.MenuItem;
+import com.thecoderscorner.menu.domain.state.PortableColor;
 import com.thecoderscorner.menu.mgr.MenuManagerServer;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.thecoderscorner.embedcontrol.core.controlmgr.EditorComponent.PortableAlignment;
-import static com.thecoderscorner.embedcontrol.core.controlmgr.EditorComponent.RenderingStatus.NORMAL;
-import static com.thecoderscorner.embedcontrol.core.controlmgr.color.ConditionalColoring.ColorComponentType.TEXT_FIELD;
-import static com.thecoderscorner.embedcontrol.core.controlmgr.color.ControlColor.asFxColor;
-import static com.thecoderscorner.embedcontrol.core.controlmgr.color.ControlColor.fromFxColor;
-import static com.thecoderscorner.embedcontrol.customization.customdraw.CustomDrawingConfiguration.NO_CUSTOM_DRAWING;
+import static com.thecoderscorner.embedcontrol.core.controlmgr.color.ControlColor.*;
 import static com.thecoderscorner.embedcontrol.customization.customdraw.CustomDrawingConfiguration.NumericColorRange;
 
 /// Demonstrates how to create your own panel to be presented instead of an automatic menu panel. Simply
-/// register this panel with the navigation manager class and it will be presented instead of the standard
-/// panel. See `JfxLocalAutoUI` where this panel is added. Any panel that implements `UpdatablePanel` will
-/// automatically be told when menu items have updated, and be provided with a tick function for animations.
-public class StatusPanelDrawable implements PanelPresentable<Node>, UpdatablePanel {
+/// register this panel with the navigation manager class, and it will be presented instead of the standard
+/// panel. See `JfxLocalAutoUI` where this panel is added. As the class extends `BaseCustomMenuPanel`
+/// it will automatically be told when menu items have updated, and be provided with a tick function for
+/// animations. You can override the methods in `UpdatablePanel` if you use controls other than the
+/// standard menu controls created from `ComponentSettings` to update such items yourself.
+public class StatusPanelDrawable extends BaseCustomMenuPanel {
     private final EmbeddedJavaDemoMenu menuDef;
-    private final MenuEditorFactory<Node> editorFactory;
     private final MenuComponentControl componentControl;
     private final ConditionalColoring globalColors;
     private final ScheduledExecutorService executor;
     private final MenuManagerServer manager;
-    private final HashMap<Integer, EditorComponent<Node>> controlsBeingManaged = new HashMap<>();
-    private double presentableWidth = 999;
-    private GridPane gridPane;
-    private double lastWidth = 999;
 
     public StatusPanelDrawable(EmbeddedJavaDemoMenu menuDef, ScheduledExecutorService executor,
                                MenuEditorFactory<Node> factory, MenuComponentControl control,
                                MenuManagerServer manager, ConditionalColoring globalColors) {
+        super(factory, globalColors, menuDef.getMenuTree(), true);
         this.menuDef = menuDef;
         this.executor = executor;
-        this.editorFactory = factory;
         this.componentControl = control;
-        this.manager = manager;
         this.globalColors = globalColors;
+        this.manager = manager;
     }
 
-    @Override
-    public Node getPanelToPresent(double width) throws Exception {
-        lastWidth = width;
-        if (gridPane != null) {
-            // empty it if it already exists to make GC easier
-            gridPane.getChildren().clear();
-            gridPane.getColumnConstraints().clear();
-            gridPane.getRowConstraints().clear();
-        }
-        gridPane = makeGridPanel();
-        presentableWidth = width;
-        return gridPane;
-    }
-
-    private GridPane makeGridPanel() {
-        // here we create a JavaFX grid using the regular way of doing so. You can consult the JavaFx documentation
-        // for more on how to create grids.
-        gridPane = new GridPane();
-        gridPane.setHgap(5);
-        gridPane.setVgap(5);
-        gridPane.setMaxWidth(9999);
-        gridPane.setPrefWidth(presentableWidth);
-        gridPane.getChildren().clear();
-
-        // the grid will be 4 across by three down.
-        gridPane.getColumnConstraints().clear();
-        gridPane.getRowConstraints().clear();
-        gridPane.setBackground(new Background(new BackgroundFill(
-                asFxColor(globalColors.colorFor(NORMAL, TEXT_FIELD).getBg()), null, null
-        )));
+    protected void populateGrid() {
+        // An empty gridPane has been created for us, we just need to ensure the rows and cols
+        // are correctly set up and then populate it. Here we just create three rows of fixed
+        // height and split the grid into four equal columns. Adjust here as needed.
         gridPane.getRowConstraints().add(new RowConstraints(80));
         gridPane.getRowConstraints().add(new RowConstraints(20));
         gridPane.getRowConstraints().add(new RowConstraints(20));
@@ -93,93 +67,74 @@ public class StatusPanelDrawable implements PanelPresentable<Node>, UpdatablePan
             gridPane.getColumnConstraints().add(cc);
         }
 
-        // now we add some labels into the grid on the left.
-        gridPane.add(new Label("Case Temperature"), 0, 0);
-        gridPane.add(new Label("Light Color"), 0, 1);
-        gridPane.add(new Label("Authenticator"), 0, 2);
+        // now we add some labels into the grid on the left for each menu item
+        putIntoGrid(ComponentSettingsBuilder.forText("Case Temperature", globalColors).withRowCol(0, 0));
+        putIntoGrid(ComponentSettingsBuilder.forText("Light Color", globalColors).withRowCol(1, 0));
+        putIntoGrid(ComponentSettingsBuilder.forText("Authenticator", globalColors).withRowCol(2, 0));
 
+        // and on the right we create a custom simulation button that uses native components showing that these forms
+        // can not only use menu item components, but also native JavaFX components. When we click it causes some menu
+        // items to update automatically.
         gridPane.add(new Label("Start Simulating"), 2, 0);
         var runSimButton = new Button("Run Sim");
-        runSimButton.setOnAction(event -> executor.scheduleAtFixedRate(this::updateTemp, 200L, 200L, TimeUnit.MILLISECONDS));
+        runSimButton.setOnAction(_ -> executor.scheduleAtFixedRate(this::updateTemp, 200L, 200L, TimeUnit.MILLISECONDS));
         gridPane.add(runSimButton, 2, 1);
 
+        // for the three custom drawing below, these are to override the color for a menu item under certain
+        // conditions, we provide the custom drawing to a the ComponentSettings during creation.
+
         // and now we add in a component that will render using the VU meter style. It is a float item, and we provide
-        // custom drawing configuration for it, so it has three ranges, green, orange, red.
-        FontInformation font100Pc = new FontInformation(100, SizeMeasurement.PERCENT);
-        var greenOrangeRed = new NumberCustomDrawingConfiguration(List.of(
+        // custom drawing configuration for it, so it has three ranges: green, orange, red. There are many forms of
+        // custom drawing, this is one common example.
+        var greenOrangeRedNumericCustom = new NumberCustomDrawingConfiguration(List.of(
                 new NumericColorRange(0.0, 70.0, fromFxColor(Color.GREEN), fromFxColor(Color.WHITE)),
                 new NumericColorRange(70.0, 90.0, fromFxColor(Color.ORANGE), fromFxColor(Color.WHITE)),
                 new NumericColorRange(90.0, 100.0, fromFxColor(Color.RED), fromFxColor(Color.LIGHTGRAY))
-        ), "vuColors");
-        putIntoGrid(menuDef.getStatusCaseTempOC(), new ComponentSettings(
-                globalColors, font100Pc, PortableAlignment.CENTER,
-                new ComponentPositioning(0, 1), RedrawingMode.SHOW_VALUE, ControlType.VU_METER,
-                greenOrangeRed, true)
-        );
+        ));
 
-        putIntoGrid(menuDef.getStatusIoTMonitor(), new ComponentSettings(
-                globalColors, font100Pc, PortableAlignment.RIGHT,
-                new ComponentPositioning(2, 1), RedrawingMode.SHOW_VALUE, ControlType.AUTH_IOT_CONTROL,
-                NO_CUSTOM_DRAWING, true));
+        // here we create a custom drawing for a boolean item, it renders red when the items state is false
+        // and green when the item state is true
+        var redGreenBooleanCustom = new BooleanCustomDrawingConfiguration(
+                new ControlColor(GREEN, WHITE), new ControlColor(RED, WHITE));
 
-        putIntoGrid(menuDef.getStatusLightColor(), new ComponentSettings(
-                globalColors, font100Pc, PortableAlignment.RIGHT,
-                new ComponentPositioning(1, 1), RedrawingMode.SHOW_VALUE, ControlType.RGB_CONTROL,
-                NO_CUSTOM_DRAWING, true));
+        // here we create a custom drawing for a string item, it renders red when the text value for the
+        // menu item is "Danger"
+        var stringColorCustom = new StringCustomDrawingConfiguration(List.of(
+                new Pair("Danger", new ControlColor(RED, WHITE))));
 
-        return gridPane;
+        putIntoGrid(ComponentSettingsBuilder.forMenuItem(menuDef.getStatusCaseTempOC(), globalColors)
+                        .withJustification(PortableAlignment.CENTER)
+                        .withRowCol(0, 1)
+                        .withDrawMode(RedrawingMode.SHOW_VALUE)
+                        .withControlType(ControlType.VU_METER)
+                        .withCustomDrawing(greenOrangeRedNumericCustom));
+
+        // Here we create an IoT manager button that represents the IoT Monitor menu item
+        putIntoGrid(ComponentSettingsBuilder.forMenuItem(menuDef.getStatusIoTMonitor(), globalColors)
+                        .withRowCol(2, 1));
+
+        // Here we create an RGB control from the status light color menu item.
+        putIntoGrid(ComponentSettingsBuilder.forMenuItem(menuDef.getStatusLightColor(), globalColors)
+                        .withJustification(PortableAlignment.RIGHT)
+                        .withPosition(new ComponentPositioning(1, 1))
+                        .withDrawMode(RedrawingMode.SHOW_VALUE));
     }
 
+    // When the simulate button is pressed, this is called frequently to update a couple of menu items.
     private void updateTemp() {
         manager.updateMenuItem(this, menuDef.getStatusCaseTempOC(), Math.random() * 100);
         manager.updateMenuItem(this, menuDef.getLED1Brightness(), Math.random() * 100 );
     }
 
-    private void putIntoGrid(MenuItem item, ComponentSettings componentSettings) {
-        ComponentPositioning pos = componentSettings.getPosition();
-        var component = editorFactory.getComponentEditorItem(item, componentSettings, this::noAction);
-        component.ifPresent(comp -> {
-            controlsBeingManaged.put(item.getId(), comp);
-            gridPane.add(comp.createComponent(), pos.getCol(), pos.getRow(), pos.getColSpan(), pos.getRowSpan());
-        });
-    }
-
-    private void noAction(MenuItem menuItem) {
-    }
-
     @Override
     public String getPanelName() {
-        if (componentControl == null) return "empty";
+        // here you just return the name of the panel as it should appear in the title.
         return "Status Panel";
     }
 
     @Override
-    public boolean canBeRemoved() {
-        return true;
+    public void entirelyRebuildGrid() {
+        // In here you put anything that would be needed should the menu structurally change. This will be called
+        // fairly infrequently. Example would be when a connection is lost and then subsequent bootstrap.
     }
-
-    @Override
-    public boolean canClose() {
-        return true;
-    }
-
-    @Override
-    public void closePanel() {
-        controlsBeingManaged.clear();
-    }
-
-    @Override
-    public void itemHasUpdated(MenuItem item) {
-        if(controlsBeingManaged.containsKey(item.getId())) {
-            controlsBeingManaged.get(item.getId()).onItemUpdated(item, manager.getManagedMenu().getMenuState(item));
-        }
-    }
-
-    @Override
-    public void tickAll() {
-        for(var component : controlsBeingManaged.values()) {
-            component.tick();
-        }
-    }
-
 }

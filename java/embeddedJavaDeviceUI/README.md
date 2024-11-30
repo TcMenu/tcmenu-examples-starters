@@ -1,14 +1,43 @@
 # EmbeddedJavaDemo menu application
 
-This application is an example of how to use tcMenu's EmbedControl to produce a basic user interface that would run on an embedded device such as a raspberry PI. The application is composed of objects that are wired together in the main class. We also include a really cut down dependency framework that is fully JPMS compliant and very small. Should you wish to, you can use our very light weight database objects that are also used within tcMenu itself.
+This application is the starting point for building an embedded Java TcMenu application. It is based upon tcMenu's EmbedControl libraries that provide the user interface based on JavaFX. This can run on most Raspberry PI devices and other embedded Linux flavours too. The application as provided has considerable functionality, but you can choose yourself what to keep and what to remove. Embed Control core also includes a really cut down dependency framework that is fully JPMS compliant and very small. Should you wish to, you can use our very light weight database objects that are also used within tcMenu itself. We'll go through each of the components below.
+
+This app framework is somewhat opinionated, but if it doesn't match with what you need, you can always look at the Java API examples.
+
+## Creating a project based on this code
+
+In either case the create project process will output a starter project very similar to this working project, you can then decide which of the optional components you want to keep, these are the components that are in the `optional` package. By default it will have a Jetty webserver that serves up browser based EmbedControlJS and a JavaFX UI.
+
+### From the CLI
+
+    tcmenu create-project -p RASPBERRY_PIJ -v -n "com.example.menu" "SimpleProject"
+
+Simply run the above command in the directory where the new project should be created. Where `com.example.menu` is the Java package to put the source code in, and the project will be called "SimpleProject". Rename as appropriate.
+
+### From TcMenu Designer UI
+
+Go to the `File -> New` option and select to create a Java/Raspberry PI project. Ensure the package name is filled in with the Java package name.
+
+### Loading into an IDE
+
+We use IntelliJ, but many IDEs support Java and you can consult their documentation for importing a maven (pom.xml) project. In IntelliJ simply create a new project from the POM file. 
 
 ## How the app is organised.
 
 The application is split up into several files:
 
-* `EmbeddedJavaDemoApp` - this is the class that starts up your application and initialises any plugins you selected. You should not touch this class as it is overwritten every time around.
+### Components required for operation
+
+* `EmbeddedJavaDemoApp` - this is the class that starts up your application and initialises any plugins you selected. This is the starting point and you're free to rearrange as needed. 
 * `EmbeddedJavaDemoMenu` - this is the class that holds all the menu definitions and the menu tree. It is available in the spring context, and you can inject it into any of your components that need it. It also has short-cut methods to get every menu item.
-* `EmbeddedJavaDemoController` - this is where any callbacks that you register go, at the moment we support only one controller, in future we may provide support for more than one. Each function callback that you declare in TcMenu Designer will turn into a method in here. This also allows you to listen for any menu item, and for start and stop events. Further, you can change the controller's constructor to include other components if needed.
+* `EmbeddedJavaDemoController` - this is the controller for the menu front-end. Any callbacks that you register in designer will go here, at the moment we support only one controller, in future we may provide support for more than one. Each function callback that you declare in TcMenu Designer will turn into a method in here. This also allows you to listen for any menu item, and for start and stop events. Further, you can change the controller's constructor to include other components if needed. Scroll choice callbacks that request the data for scroll choice items are also added. 
+* `MenuConfig` - this is generally used to wire together all of your components. You can create additional components in this class by creating a function annotated with `@TcComponent`, any parameters to the function will be auto-wired using components already available in the context.
+
+### Components that are optional
+
+* `JfxLocalAutoUI` and `LocalTreeComponentManager` provide the local UI, it produces a panel that fills the entire window and represents the menu structure.
+* `StatusPanelDrawable` demonstrates how to override drawing with a custom arranged grid for the status submenu. It demonstrates custom drawing too.
+* `TcJettyWebServer` and `TcJettyWebSocketEndpoint` both configure and serve up a website that contains EmbedControlJS, which can produce a lightweight remote control application in the browser. 
 
 ## Building the app
 
@@ -23,12 +52,50 @@ By default, the app uses maven to build, you'll need a couple of things installe
  
 If you use the standard maven setup, after running the above build steps, you should see the following directory has been created: `target/jfx/` containing an `app` directory and a `deps` directory. We recommend running the application from the `target/jfx/app` directory.
 
-If you used a modular build (IE you have a `module-info.java` file in the `src/main/java` directory) then to run the application ensure that the right version of Java using `java -version` is on your path and then the run command should be `java --module-path ../deps "-Dprism.lcdtext=false" --add-modules com.thecoderscorner.menuexample.embeddedjavademo com.thecoderscorner.menu.devicedemo.EmbeddedJavaDemoApp`
+If you used a modular build (IE you have a `module-info.java` file in the `src/main/java` directory) then to run the application ensure that the right version of Java using `java -version` is on your path and then the run command should be `java --module-path ../deps "-Dprism.lcdtext=false" --add-modules com.thecoderscorner.menuexample.embeddedjavademo com.thecoderscorner.menu.devicedemo.EmbeddedJavaDemoApp`. Given TcMenu is JPMS compliant, it can be packaged using `jpackage`.
 
-## JavaFx local UI
+## The simple application context and the MenuConfig class
 
-In the optional folder, there's a couple of classes that will generate a JavaFX UI automatically for your UI. These are documented within the folder.
+The menu configuration system within TcMenu allows for very simple arrangements of components. To get you started, we've populated the context with all the components needed to build a simple UI using JavaFX, and a webserver that can serve up EmbedControlJS . There is no absolute requirement that you have to keep any of the optional components, and in fact you could have either no UI, or a different UI technology.
 
-## Web server and TagVal server
+### Properties files and environmental settings
 
-There's both a webserver that serves up [EmbedControlJS](https://github.com/TcMenu/embedcontrolJS) to a browser, and also TagVal support too, so you connect to it from the API.
+By default properties files are supported and they will be loaded into the `MenuConfig` during initialisation using the following rules:
+
+1. the environment is specified either during the construction in the `App` file, or it is set as a system property `-Dtc.env=dev` for example. The default environment is `dev`.
+2. A file called `application.properties` will be loaded, this file must exist. This is the lowest precidence.
+3. Additionally the file `application_[env].properties` where `env` is the present environment name. For example by default `application_dev.properties` would be searched for, if it exists, it would have higher precedence than the above.
+4. You can read properties using method `mandatoryStringProp`, `propAsIntWithDefault` and `getResolvedProperties`. You can find the environment using `getEnvironment`. 
+
+### Adding your objects to the context and querying it
+
+Consider the `MenuConfig` class somewhat like a storage object that can hold instances of objects needed for the running of the application. You can add methods to the class that are annotated with `@TcComponent` and these will be added into the `context`, and any such method can take as many parameters as needed, and the parameters will be automatically wired where possible from the objects already available in the context. Some degree of dependency is allowed and supported. Let's take an example that we a `Car` and that object needs an `Engine`. In the menu config we'd add something like:
+
+    public class MenuConfig extends BaseMenuConfig {
+        // other configuration...
+        public Engine myEngine() {
+            int cylinders = Integer.parseInt(mandatoryStringProp("engine.cylinders"));
+            return new Engine();
+        }
+        public Car myCar(Engine engine) {
+            return new Car(engine);
+        }
+        // other configuration...
+    }
+
+We can see above that `myCar` needs an `Engine` and that there is an engine in the context, so the engine parameter will be wired during initialisation.
+
+## More details about using the Controller class
+
+The controller class is where you receive updates as events happen on the menu, either locally or remotely. You can then take action based upon the new state. There are several ways that you can get updates:
+
+1. You can get updates when a particular item changes, to do this we create a method that is annotated with `@MenuCallback(id=n)` where `n` is ID of the menu item. The function should follow the signature `void methodName(Object sender, MenuItem item)`. TcMenu Designer will generate these automatically wherever a callback is defined.
+2. There is a callback for changes in every menu item, you can hook into this if you prefer and determine yourself which item is updated by overriding: `void menuItemHasChanged(Object sender, MenuItem item)`.
+3. You can handle callbacks from list items by providing an additional parameter as follows `@MenuCallback(id=15, listResult=true)` and in this case we must add a parameter of type `ListResponse listResponse` after the `sender` and `item`, and the response tells you how the interaction with the list ended.
+4. You can use the controller to populate scroll choice items. Again designer should do this automatically if it detects a scroll choice item. For this you annotate a method with the `@ScrollChoiceValueRetriever(id=n)` where n is the ID of the menu item. You will receive a callback whenever the scroll choice item needs a value and the signature is: `String myScrollChoiceNeedsValue(ScrollChoiceMenuItem item, CurrentScrollPosition position)`
+ 
+## Auto-UI and creating your own panels
+
+For rendering you have two choices, first you can use the Auto-UI, this attempts to provide a graphical layout of your menu items, and for many simple menu applications it may be enough. However, for panels where you need customisation, this is also possible.
+
+All EmebedControl graphical panels that make up the JavaFX UI extend from  `PanelPresentable<Node>`. This contains the naming of a panel, if it can be navigated from, and if it can be dismissed. In order to create your own custom UIs for a given sub menu you simply create a class that extends from `BaseCustomMenuPanel` and register it with the navigation manager. See `JfxLocalAutoUI.java` where we register `StatusPanelDrawable` to draw the status menu with a custom panel.

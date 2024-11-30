@@ -1,5 +1,7 @@
 package com.thecoderscorner.menu.devicedemo;
 
+import com.thecoderscorner.embedcontrol.core.util.BaseMenuConfig;
+import com.thecoderscorner.embedcontrol.core.util.TcApiDefinitions;
 import com.thecoderscorner.menu.domain.*;
 import com.thecoderscorner.menu.domain.state.MenuTree;
 import com.thecoderscorner.menu.persist.JsonMenuItemSerializer;
@@ -17,7 +19,7 @@ import com.thecoderscorner.menu.persist.JsonMenuItemSerializer;
  * boolean, text items, etc. Each item in the menu is defined in the APP_MENU_ITEMS string
  * in JSON format, which is then deserialized and loaded into a MenuTree object.
  */
-public class EmbeddedJavaDemoMenu {
+public class EmbeddedJavaDemoMenu implements TcApiDefinitions {
     private final static String APP_MENU_ITEMS = """
 tcMenuCopy:[
   {
@@ -278,6 +280,11 @@ tcMenuCopy:[
         return menuTree;
     }
 
+    @Override
+    public void configureMenuInMenuComponents(BaseMenuConfig config) {
+
+    }
+
     public JsonMenuItemSerializer getJsonSerializer() {
         return jsonSerializer;
     }
@@ -343,5 +350,5 @@ tcMenuCopy:[
     public SubMenuItem getAVRBoard() {
         return (SubMenuItem) menuTree.getMenuById(16).orElseThrow();
     }
-
+    // end of menu accessors
 }

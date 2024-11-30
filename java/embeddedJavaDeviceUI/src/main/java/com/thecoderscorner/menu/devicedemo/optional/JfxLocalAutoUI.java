@@ -44,11 +44,10 @@ import javafx.stage.Stage;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * This is the local UI plugin, it provides a local UI that will by default render your menu tree onto the display using
- * Java FX. The default UI can be overridden by adding custom panels to the navigationHeader, see below where we've done
- * this for one of the submenu items.
- */
+/// This provides a local UI frame that will by default render your menu tree onto the display using
+/// Java FX. The default UI can be overridden by adding custom panels to the navigationHeader, see below
+/// where we've done this for one of the submenu items. There is an image showing the overall structure
+/// within the readme file, along with a description of how it is intended to work.
 public class JfxLocalAutoUI extends Application {
     private static final AtomicReference<MenuConfig> GLOBAL_CONTEXT = new AtomicReference<>(null);
 
@@ -56,7 +55,6 @@ public class JfxLocalAutoUI extends Application {
     private JfxNavigationHeader navigationHeader;
     private LocalDialogManager dlgMgr;
     private MenuAppVersion versionData;
-    private LocalTreeComponentManager localTree;
     private EmbeddedJavaDemoMenu menuTree;
     private GlobalSettings globalSettings;
 
@@ -89,11 +87,18 @@ public class JfxLocalAutoUI extends Application {
         var localController = new LocalMenuController();
         navigationHeader = ctx.getBean(JfxNavigationHeader.class);
         var factory = new JfxMenuEditorFactory(localController, Platform::runLater, dlgMgr);
+
+        // TEMPLATE_COPY=off
+        // The following demonstrates how to add a custom panel to your project for a particular menu item. See the
+        // StatusPanelDrawable class for more information. You provide the menu item for which custom drawing is needed
+        // and the panel that should be presented instead of the AutoUI.
         navigationHeader.addCustomMenuPanel(menuTree.getStatus(), new StatusPanelDrawable(menuTree, executor, factory,
                 localController, mgr, new CondColorFromGlobal(globalSettings)));
+        // TEMPLATE_COPY=on
+
         navigationHeader.initialiseUI(dlgMgr, localController, scroller);
 
-        localTree = new LocalTreeComponentManager(mgr, navigationHeader, executor);
+        var localTree = new LocalTreeComponentManager(mgr, navigationHeader, executor);
         mgr.start();
         navigationHeader.pushMenuNavigation(MenuTree.ROOT, ctx.getBean(MenuItemStore.class));
 

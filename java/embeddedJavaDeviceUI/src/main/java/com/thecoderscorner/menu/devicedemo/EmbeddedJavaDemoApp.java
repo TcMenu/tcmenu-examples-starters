@@ -1,5 +1,6 @@
 package com.thecoderscorner.menu.devicedemo;
 
+import com.thecoderscorner.embedcontrol.core.util.TcApiDefinitions;
 import com.thecoderscorner.menu.mgr.MenuInMenu;
 import com.thecoderscorner.menu.mgr.MenuManagerServer;
 import com.thecoderscorner.menu.persist.MenuStateSerialiser;
@@ -16,7 +17,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * This class is the application class that is run when the application starts. You can organize the application in
- * here into a series of components. This is and example of how to arrange such an application.
+ * here into a series of components. This is the starting point of a Java embedded application, you can rearrange
+ * as needed, but to continue round trips with the designer UI ensure the file with menu definitions remains unaltered
+ * and that the controller is kept in the same place.
  */
 public class EmbeddedJavaDemoApp {
     private final MenuManagerServer manager;
@@ -37,8 +40,9 @@ public class EmbeddedJavaDemoApp {
         Runtime.getRuntime().addShutdownHook(new Thread(serializer::saveMenuStates));
         // the controller receives updates and things happen on the menu, we register it here.
         manager.addMenuManagerListener(context.getBean(EmbeddedJavaDemoController.class));
-        // See the method for more information.
-        buildMenuInMenuComponents();
+        // get the api definitions and start any menu in menu components
+        var apiDefinitions = context.getBean(TcApiDefinitions.class);
+        apiDefinitions.configureMenuInMenuComponents(context);
 
         // Give the Local UI access to teh context
         JfxLocalAutoUI.setAppContext(context);
@@ -53,19 +57,4 @@ public class EmbeddedJavaDemoApp {
     public static void main(String[] args) {
         new EmbeddedJavaDemoApp().start();
     }
-
-    ///
-    /// here we demonstrate how to include menu in menu components. You can use tcMenu Designer to generate the menu in
-    /// menu components and add them here, it can build the entire method for you from `Code -> Menu In Menu`
-    ///
-    public void buildMenuInMenuComponents() {
-        MenuManagerServer menuManager = context.getBean(MenuManagerServer.class);
-        MenuCommandProtocol protocol = context.getBean(MenuCommandProtocol.class);
-        ScheduledExecutorService executor = context.getBean(ScheduledExecutorService.class);
-        LocalIdentifier localId = new LocalIdentifier(menuManager.getServerUuid(), menuManager.getServerName());
-        var remMenuAvrBoardConnector = new SocketBasedConnector(localId, executor, Clock.systemUTC(), protocol, "192.168.0.96", 3333, ConnectMode.FULLY_AUTHENTICATED, null);
-        var remMenuAvrBoard = new MenuInMenu(remMenuAvrBoardConnector, menuManager, menuManager.getManagedMenu().getMenuById(16).orElseThrow(), MenuInMenu.ReplicationMode.REPLICATE_ADD_STATUS_ITEM, 100000, 65000);
-        remMenuAvrBoard.start();
-    }
-
 }
