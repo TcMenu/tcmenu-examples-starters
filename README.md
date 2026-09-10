@@ -30,14 +30,3 @@ Once you've set up the above you can start with any of the following projects:
 * javaApiExamples: A number of examples that show various types of connection possibilities with the Java API.
 * javaApiWebsocketServer: An example that shows how to use a simple websocket library standalone with a separate web server.
 
-## DotNet examples
-
-* Will be migrated here shortly
-
-## Python examples
-
-* Will be migrated here shortly
-
-## Flutter examples
-
-* Will be migrated here shortly
